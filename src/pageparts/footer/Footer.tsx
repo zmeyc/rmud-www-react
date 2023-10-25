@@ -1,10 +1,15 @@
-import { FC } from "preact/compat"
-import { Moons } from "../../components/logos/Moons"
+import { ComponentProps, FC } from "preact/compat"
 import styles from "./Footer.module.css"
 
-export const Footer: FC = () => {
+export interface FooterProps extends ComponentProps<"div"> {
+  className?: string
+}
+
+export const Footer: FC<FooterProps> = ({ className, ...props }) => {
   const currentYear = new Date().getFullYear()
   return (
-    <div className={styles.root}>&copy; 1997 - {currentYear} Team RMUD</div>
+    <div {...props} className={styles.root}>
+      &copy; 1997 - {currentYear} Team RMUD
+    </div>
   )
 }
