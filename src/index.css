@@ -3,15 +3,40 @@
   src: url(./assets/PxPlus_IBM_VGA8.ttf);
 }
 
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 :root {
+  --color-black: rgb(0, 0, 0);
+  --color-low-blue: rgb(0, 0, 170);
+  --color-low-green: rgb(0, 170, 0);
+  --color-low-cyan: rgb(0, 170, 170);
+  --color-low-red: rgb(170, 0, 0);
+  --color-low-magenta: rgb(170, 0, 170);
+  --color-brown: rgb(170, 85, 0);
+  --color-light-gray: rgb(170, 170, 170);
+  --color-dark-gray: rgb(85, 85, 85);
+  --color-high-blue: rgb(85, 85, 255);
+  --color-high-green: rgb(85, 255, 85);
+  --color-high-cyan: rgb(85, 255, 255);
+  --color-high-red: rgb(255, 85, 85);
+  --color-high-magenta: rgb(255, 85, 255);
+  --color-yellow: rgb(255, 255, 85);
+  --color-white: rgb(255, 255, 255);
+
   font-family: PxPlus_IBM_VGA8, "Lucida Console", "Courier New", monospace;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 19px;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--color-light-gray);
+  background-color: var(--color-black);
 
   -webkit-font-smoothing: none;
   -webkit-text-size-adjust: 100%;
@@ -37,8 +62,8 @@ body {
 h1 {
   /*
   font-size: 3.2em;
-  */
   line-height: 1.1;
+  */
 }
 
 button {

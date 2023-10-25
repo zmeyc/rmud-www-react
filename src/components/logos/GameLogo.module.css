@@ -1,0 +1,16 @@
+.root {
+  position: relative;
+}
+
+.circle {
+  color: var(--color-low-green);
+  text-align: left;
+}
+
+.dragon {
+  color: var(--color-low-red);
+  left: 32px;
+  top: 19px;
+  position: absolute;
+  text-align: left;
+}

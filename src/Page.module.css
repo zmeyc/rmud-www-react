@@ -1,0 +1,19 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  margin: 2ch 2ch;
+}
+
+.content {
+  flex: 1;
+  max-width: 80ch;
+  margin: 2ch 2ch;
+}
+
+.footer {
+  margin: 2ch 2ch;
+}

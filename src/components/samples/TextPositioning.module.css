@@ -1,0 +1,15 @@
+.root {
+  position: relative;
+}
+
+.frame {
+  position: absolute;
+  text-align: left;
+}
+
+.content {
+  position: absolute;
+  top: 2ch;
+  left: 1ch;
+  text-align: left;
+}
