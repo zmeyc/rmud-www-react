@@ -1,0 +1,22 @@
+.root {
+  display: inline-block;
+  padding: 2ch 0;
+  color: var(--color-low-cyan);
+}
+
+.root:hover {
+  color: var(--color-yellow);
+  text-decoration: none;
+}
+
+.root:hover .brackets {
+  color: var(--color-yellow);
+}
+
+.brackets {
+  color: var(--color-low-blue);
+}
+
+.bracketsActive {
+  color: var(--color-high-blue);
+}

@@ -2,14 +2,13 @@
   display: flex;
   align-items: stretch;
   justify-content: center;
-  width: 100vw;
   min-height: 100vh;
   background: rgb(85, 85, 85, 0.3);
 }
 
 .page {
   flex: 1;
-  min-width: 40ch;
+  min-width: 10ch;
   max-width: 120ch;
   background: var(--color-black);
 }

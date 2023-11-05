@@ -8,10 +8,15 @@
   margin: 2ch 2ch;
 }
 
+.topMenu {
+  margin-bottom: 2ch;
+}
+
 .content {
   flex: 1;
   max-width: 80ch;
-  margin: 2ch 2ch;
+  width: 100%;
+  padding: 0 2ch;
 }
 
 .footer {
