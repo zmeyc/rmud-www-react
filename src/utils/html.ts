@@ -23,3 +23,7 @@ export function injectCssString(css: string, document: Document) {
   style.appendChild(node)
   document.head.appendChild(style)
 }
+
+export function scrollToBottom(body: HTMLElement) {
+  body.scrollTop = body.scrollHeight - body.clientHeight
+}

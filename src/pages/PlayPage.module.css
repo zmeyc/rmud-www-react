@@ -11,3 +11,8 @@
   flex: 1;
   border: none;
 }
+
+.commandInput {
+  margin-top: 2ch;
+  margin-bottom: 2ch;
+}

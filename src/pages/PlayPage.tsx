@@ -11,7 +11,9 @@ import { BarePage } from "../pageparts/pages/BarePage"
 import { GameText } from "../components/text/GameText"
 import { AutoGrowingTextArea } from "../components/inputs/AutoGrowingTextArea"
 import { AutoGrowingTextAreaElement } from "../components/inputs/AutoGrowingTextAreaElement"
+import { GameTextElement } from "../components/text/GameTextElement"
 import { WebClient, WebClientCallbacks } from "../webclient/WebClient"
+import { scrollToBottom } from "../utils/html"
 import styles from "./PlayPage.module.css"
 
 export interface PlayPageProps extends ComponentProps<"div"> {
@@ -19,26 +21,21 @@ export interface PlayPageProps extends ComponentProps<"div"> {
 }
 
 export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
-  const gameTextIframeRef = useRef<HTMLIFrameElement>(null)
-  const gameTextParagraphRef = useRef<HTMLParagraphElement>(null)
+  const gameTextRef = useRef<GameTextElement>(null)
   const userInputRef = useRef<AutoGrowingTextAreaElement>(null)
 
   const [isFirstCommand, setIsFirstCommand] = useState(true)
 
   useEffect(() => {
-    const gameTextIframe = gameTextIframeRef.current
-    if (gameTextIframe === null) {
+    const gameText = gameTextRef.current
+    if (gameText === null) {
       return
     }
-    const iframeWindow = gameTextIframe.contentWindow
+    const iframeWindow = gameText.contentWindow()
     if (iframeWindow === null) {
       return
     }
 
-    const gameTextParagraph = gameTextParagraphRef.current
-    if (gameTextParagraph === null) {
-      return
-    }
     const userInput = userInputRef.current
     if (userInput === null) {
       return
@@ -48,16 +45,17 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     const listenKeyboardEventsOn = [window, iframeWindow]
     const callbacks: WebClientCallbacks = {
       onResetGameText: () => {
-        gameTextParagraph.innerHTML = ""
+        gameTextRef.current?.clear()
       },
       onAppendToGameText: (text: string) => {
-        gameTextParagraph.innerHTML += text
+        gameTextRef.current?.append(text)
+        scrollToBottom(iframeWindow.document.body)
       },
       onGetUserInput: (): string => {
         return userInput.value()
       },
       onResetUserInput: () => {
-        userInput.setValue("")
+        userInput.clear()
         setIsFirstCommand(false)
       },
       onFocusUserInput: () => {
@@ -75,14 +73,17 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
   }, [])
 
   return (
-    <BarePage {...props} className={cn(className, styles.root)}>
+    <BarePage
+      {...props}
+      className={cn(className, styles.root)}
+    >
       <div className={styles.content}>
         <GameText
           className={styles.gameText}
-          iframeRef={gameTextIframeRef}
-          paragraphRef={gameTextParagraphRef}
+          ref={gameTextRef}
         />
         <AutoGrowingTextArea
+          className={styles.commandInput}
           ref={userInputRef}
           placeholder={isFirstCommand ? "Введите команду" : undefined}
         />

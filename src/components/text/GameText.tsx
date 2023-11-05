@@ -1,4 +1,10 @@
-import { ComponentProps, FC, RefObject, memo, useEffect } from "preact/compat"
+import {
+  ComponentProps,
+  forwardRef,
+  memo,
+  useEffect,
+  useRef,
+} from "preact/compat"
 import cn from "classnames"
 import {
   injectCssString,
@@ -7,18 +13,18 @@ import {
 } from "../../utils/html"
 import indexCss from "../../assets/styles/index.css?inline"
 import blinkCss from "../../assets/styles/blink.css?inline"
+import { GameTextElement, useGameTextElement } from "./GameTextElement"
 import gameTextCss from "./GameTextIFrame.css?inline"
 import styles from "./GameText.module.css"
 
 export interface GameTextProps extends ComponentProps<"iframe"> {
   className?: string
-  iframeRef: RefObject<HTMLIFrameElement>
-  paragraphRef: RefObject<HTMLParagraphElement>
 }
 
-export const GameText: FC<GameTextProps> = memo(
-  ({ className, iframeRef, paragraphRef, ...props }) => {
-    //const iframeRef = useRef<HTMLIFrameElement>(null)
+export const GameText = memo(
+  forwardRef<GameTextElement, GameTextProps>(({ className, ...props }, ref) => {
+    const iframeRef = useRef<HTMLIFrameElement>(null)
+    const paragraphRef = useRef<HTMLParagraphElement | null>(null)
 
     useEffect(() => {
       const iframe = iframeRef.current
@@ -45,6 +51,8 @@ export const GameText: FC<GameTextProps> = memo(
       paragraphRef.current = gameTextParagraph
     }, [])
 
+    useGameTextElement(ref, iframeRef, paragraphRef)
+
     return (
       <iframe
         {...props}
@@ -52,6 +60,6 @@ export const GameText: FC<GameTextProps> = memo(
         ref={iframeRef}
       />
     )
-  },
+  }),
 )
 GameText.displayName = "GameText"
