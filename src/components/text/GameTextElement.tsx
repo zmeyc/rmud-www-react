@@ -1,8 +1,10 @@
 import { ForwardedRef, Ref, useImperativeHandle } from "preact/compat"
+import { isScrolledToBottom, scrollToBottom } from "../../utils/html"
 
 export interface GameTextElement {
   append: (text: string) => void
   clear: () => void
+  scrollToBottom: () => void
   contentWindow: () => Window | null
 }
 
@@ -27,6 +29,15 @@ export function useGameTextElement(
           return
         }
         paragraph.innerHTML = ""
+      },
+      scrollToBottom: () => {
+        const body = iframeRef.current?.contentWindow?.document.body
+        if (body === undefined) {
+          return
+        }
+        if (!isScrolledToBottom(body)) {
+          scrollToBottom(body)
+        }
       },
       contentWindow: () => {
         const iframe = iframeRef.current

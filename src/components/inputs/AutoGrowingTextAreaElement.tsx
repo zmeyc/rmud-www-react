@@ -11,6 +11,7 @@ export interface AutoGrowingTextAreaElement {
 export function useAutoGrowingTextAreaElement(
   ref: ForwardedRef<AutoGrowingTextAreaElement>,
   textareaRef: Ref<HTMLTextAreaElement>,
+  onDidChangeTextAreaSize?: () => void,
 ) {
   useImperativeHandle(
     ref,
@@ -25,6 +26,7 @@ export function useAutoGrowingTextAreaElement(
         }
         textarea.value = ""
         updateBackingParentSize(textarea)
+        onDidChangeTextAreaSize?.()
       },
       value: () => {
         return textareaRef.current?.value ?? ""
@@ -36,6 +38,7 @@ export function useAutoGrowingTextAreaElement(
         }
         textarea.value = value
         updateBackingParentSize(textarea)
+        onDidChangeTextAreaSize?.()
       },
     }),
     [],

@@ -24,6 +24,15 @@ export function injectCssString(css: string, document: Document) {
   document.head.appendChild(style)
 }
 
+export function isScrolledToBottom(body: HTMLElement) {
+  // clientHeight, scrollTop, and clientHeight are all rounded
+  const maximumRoundingError = 3
+  return (
+    body.scrollHeight - body.clientHeight <=
+    body.scrollTop + maximumRoundingError
+  )
+}
+
 export function scrollToBottom(body: HTMLElement) {
   body.scrollTop = body.scrollHeight - body.clientHeight
 }

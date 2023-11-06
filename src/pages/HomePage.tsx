@@ -10,20 +10,25 @@ export interface HomePageProps extends ComponentProps<"div"> {
 
 export const HomePage: FC<HomePageProps> = memo(({ className, ...props }) => {
   return (
-    <Page {...props} className={cn(className, styles.root)}>
+    <Page
+      {...props}
+      className={cn(className, styles.root)}
+    >
       <h1>Добро пожаловать в rmud!</h1>
       <p>
         RMUD - текстовая многопользовательская игра в жанре фэнтэзи, основанная
         в июне 1997 года. Изначально использовалась кодовая база{" "}
-        <a target="_blank" href="https://www.circlemud.org">
+        <a
+          target="_blank"
+          href="https://www.circlemud.org"
+        >
           CircleMUD
         </a>
         , которая в течение многих лет разработки претерпела значительные
         изменения, а в последствии была вовсе переписана с нуля на языке Swift.
       </p>
       <p>
-        Исходный код кодовой базы находится{" "}
-        <a href="https://github.com/rmud">здесь</a>.
+        Исходный код игры находится <a href="https://github.com/rmud">здесь</a>.
       </p>
       <p>
         Изначально для игры нужен был MUD клиент, работающий по протоколу

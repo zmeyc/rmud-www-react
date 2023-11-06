@@ -1,6 +1,5 @@
 import {
   ComponentProps,
-  Ref,
   TargetedEvent,
   forwardRef,
   memo,
@@ -18,12 +17,12 @@ import styles from "./AutoGrowingTextArea.module.css"
 export interface AutoGrowingTextAreaProps extends ComponentProps<"div"> {
   className?: string
   placeholder?: string
-  commandsRef?: Ref<AutoGrowingTextAreaElement>
+  onDidChangeTextAreaSize?: () => void
 }
 
 export const AutoGrowingTextArea = memo(
   forwardRef<AutoGrowingTextAreaElement, AutoGrowingTextAreaProps>(
-    ({ className, placeholder, commandsRef = null, ...props }, ref) => {
+    ({ className, placeholder, onDidChangeTextAreaSize, ...props }, ref) => {
       const textareaRef = useRef<HTMLTextAreaElement>(null)
 
       useAutoGrowingTextAreaElement(ref, textareaRef)
@@ -32,12 +31,16 @@ export const AutoGrowingTextArea = memo(
         (event: TargetedEvent<HTMLTextAreaElement, Event>) => {
           const { currentTarget } = event
           updateBackingParentSize(currentTarget)
+          onDidChangeTextAreaSize?.()
         },
         [],
       )
 
       return (
-        <div {...props} className={cn(styles.root, className)}>
+        <div
+          {...props}
+          className={cn(styles.root, className)}
+        >
           <textarea
             ref={textareaRef}
             autocomplete="off"

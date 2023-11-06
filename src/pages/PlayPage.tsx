@@ -2,6 +2,7 @@ import {
   ComponentProps,
   FC,
   memo,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -13,7 +14,6 @@ import { AutoGrowingTextArea } from "../components/inputs/AutoGrowingTextArea"
 import { AutoGrowingTextAreaElement } from "../components/inputs/AutoGrowingTextAreaElement"
 import { GameTextElement } from "../components/text/GameTextElement"
 import { WebClient, WebClientCallbacks } from "../webclient/WebClient"
-import { scrollToBottom } from "../utils/html"
 import styles from "./PlayPage.module.css"
 
 export interface PlayPageProps extends ComponentProps<"div"> {
@@ -45,11 +45,11 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     const listenKeyboardEventsOn = [window, iframeWindow]
     const callbacks: WebClientCallbacks = {
       onResetGameText: () => {
-        gameTextRef.current?.clear()
+        gameText.clear()
       },
       onAppendToGameText: (text: string) => {
-        gameTextRef.current?.append(text)
-        scrollToBottom(iframeWindow.document.body)
+        gameText.append(text)
+        gameText.scrollToBottom()
       },
       onGetUserInput: (): string => {
         return userInput.value()
@@ -72,6 +72,10 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     }
   }, [])
 
+  const handleDidChangeUserInputSize = useCallback(() => {
+    gameTextRef.current?.scrollToBottom()
+  }, [])
+
   return (
     <BarePage
       {...props}
@@ -86,6 +90,7 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
           className={styles.commandInput}
           ref={userInputRef}
           placeholder={isFirstCommand ? "Введите команду" : undefined}
+          onDidChangeTextAreaSize={handleDidChangeUserInputSize}
         />
       </div>
     </BarePage>

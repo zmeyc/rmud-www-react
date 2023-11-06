@@ -52,7 +52,7 @@ p ul li {
 
   font-family: PxPlus_IBM_VGA8, "Lucida Console", "Courier New", monospace;
   font-size: 16px;
-  line-height: 19px;
+  line-height: 2ch;
   font-weight: 400;
 
   color-scheme: light dark;
@@ -66,6 +66,38 @@ p ul li {
 ::selection {
   color: var(--color-white);
   background-color: var(--color-brown);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAQAgAAAABEUXkAAAAAEUlEQVQI12NkYmBUYGAkmgQAGmgBIbrSQNsAAAAASUVORK5CYII=");
+}
+
+::-webkit-scrollbar-thumb {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAQAgAAAABEUXkAAAAAEUlEQVQI12NUYmDsYGAkmgQAfygFYZqelcwAAAAASUVORK5CYII=");
+}
+
+::-webkit-scrollbar-button:vertical:start {
+  height: 16px;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAQAgAAAABEUXkAAAAAHklEQVQIW2NcxcAIRyuYGBd0gVADGDEwgRCyglUMAByRCyEVVo9YAAAAAElFTkSuQmCC");
+}
+
+::-webkit-scrollbar-button:vertical:end {
+  height: 16px;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAQAgAAAABEUXkAAAAAHElEQVQIW2NcxcAIRwxMINTQBUILwGgFE0IWjAACIQsh3mAPcAAAAABJRU5ErkJggg==");
+}
+
+::-webkit-scrollbar-button:vertical:start:decrement,
+::-webkit-scrollbar-button:vertical:end:increment {
+  display: block;
+}
+
+::-webkit-scrollbar-button:vertical:start:increment,
+::-webkit-scrollbar-button:vertical:end:decrement {
+  display: none;
 }
 
 #app {
