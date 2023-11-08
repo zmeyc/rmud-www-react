@@ -17,6 +17,7 @@ import { WebClient, WebClientCallbacks } from "../webclient/WebClient"
 import { MaskedInput } from "../components/inputs/MaskedInput"
 import { MaskedInputElement } from "../components/inputs/MaskedInputElement"
 import { isInitialized, setInitialized } from "../utils/html"
+import { replaceNewLinesWithSpaces } from "../utils/string"
 import styles from "./PlayPage.module.css"
 
 export interface PlayPageProps extends ComponentProps<"div"> {
@@ -76,22 +77,36 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
         gameText.scrollToBottom()
       },
       onGetUserInput: (): string => {
-        return userInput.value()
+        return isMaskedInput ? maskedInput.value() : userInput.value()
       },
       onResetUserInput: () => {
-        userInput.clear()
+        if (isMaskedInput) {
+          maskedInput.clear()
+        } else {
+          userInput.clear()
+        }
         setIsFirstCommand(false)
       },
       onFocusUserInput: () => {
-        userInput.focus()
+        if (isMaskedInput) {
+          maskedInput.focus()
+        } else {
+          userInput.focus()
+        }
       },
       onEchoOff: () => {
+        if (isMaskedInput) {
+          return
+        }
         inputHadFocusHint.current = userInput.isFocused()
-        maskedInput.setValue(userInput.value().replace(/\r?\n|\r/g, " "))
+        maskedInput.setValue(replaceNewLinesWithSpaces(userInput.value()))
         userInput.clear()
         setIsMaskedInput(true)
       },
       onEchoOn: () => {
+        if (!isMaskedInput) {
+          return
+        }
         inputHadFocusHint.current = maskedInput.isFocused()
         userInput.setValue(maskedInput.value())
         maskedInput.clear()
@@ -106,7 +121,7 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
       webClient.disconnect()
       webClient.unregisterHotkeyListener()
     }
-  }, [])
+  }, [isMaskedInput])
 
   useEffect(() => {
     if (!inputHadFocusHint.current) {
