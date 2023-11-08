@@ -1,0 +1,19 @@
+.root {
+}
+
+.root > input {
+  padding: 0 1ch;
+  border: 0;
+
+  color: var(--color-white);
+  background-color: var(--color-low-blue);
+}
+
+.root > input::placeholder {
+  color: var(--color-light-gray);
+}
+
+.root > input::selection {
+  color: var(--color-white);
+  background-color: var(--color-brown);
+}

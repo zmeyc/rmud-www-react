@@ -47,6 +47,6 @@ export function useGameTextElement(
         return iframe.contentWindow
       },
     }),
-    [],
+    [iframeRef, paragraphRef],
   )
 }

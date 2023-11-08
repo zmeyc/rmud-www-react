@@ -6,12 +6,12 @@ import {
   useCallback,
   useRef,
 } from "preact/compat"
+import cn from "classnames"
 import {
   AutoGrowingTextAreaElement,
   updateBackingParentSize,
   useAutoGrowingTextAreaElement,
 } from "./AutoGrowingTextAreaElement"
-import cn from "classnames"
 import styles from "./AutoGrowingTextArea.module.css"
 
 export interface AutoGrowingTextAreaProps extends ComponentProps<"div"> {
@@ -28,12 +28,12 @@ export const AutoGrowingTextArea = memo(
       useAutoGrowingTextAreaElement(ref, textareaRef)
 
       const handleInput = useCallback(
-        (event: TargetedEvent<HTMLTextAreaElement, Event>) => {
+        (event: TargetedEvent<HTMLTextAreaElement>) => {
           const { currentTarget } = event
           updateBackingParentSize(currentTarget)
           onDidChangeTextAreaSize?.()
         },
-        [],
+        [onDidChangeTextAreaSize],
       )
 
       return (
@@ -46,12 +46,12 @@ export const AutoGrowingTextArea = memo(
             autocomplete="off"
             autocorrect="off"
             autocapitalize="off"
-            // @ts-ignore
+            // @ts-expect-error Workaround https://github.com/preactjs/preact/issues/485#issuecomment-270287249
             spellCheck="false"
             rows={1}
             placeholder={placeholder}
             onInput={handleInput}
-          ></textarea>
+          />
         </div>
       )
     },

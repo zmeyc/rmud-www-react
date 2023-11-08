@@ -3,6 +3,7 @@ import { Ref, useImperativeHandle } from "preact/hooks"
 
 export interface AutoGrowingTextAreaElement {
   focus: () => void
+  isFocused: () => boolean
   clear: () => void
   value: () => string
   setValue: (value: string) => void
@@ -19,8 +20,15 @@ export function useAutoGrowingTextAreaElement(
       focus: () => {
         textareaRef.current?.focus()
       },
+      isFocused: () => {
+        const textarea = textareaRef.current
+        if (textarea === null) {
+          return false
+        }
+        return document.activeElement === textarea
+      },
       clear: () => {
-        let textarea = textareaRef.current
+        const textarea = textareaRef.current
         if (textarea === null) {
           return
         }
@@ -32,7 +40,7 @@ export function useAutoGrowingTextAreaElement(
         return textareaRef.current?.value ?? ""
       },
       setValue: (value: string) => {
-        let textarea = textareaRef.current
+        const textarea = textareaRef.current
         if (textarea === null) {
           return
         }
@@ -41,7 +49,7 @@ export function useAutoGrowingTextAreaElement(
         onDidChangeTextAreaSize?.()
       },
     }),
-    [],
+    [onDidChangeTextAreaSize, textareaRef],
   )
 }
 

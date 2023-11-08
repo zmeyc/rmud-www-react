@@ -13,5 +13,19 @@
 }
 
 .commandInput {
+  display: none;
   margin-bottom: 2ch;
+}
+
+.commandInputActive {
+  display: grid;
+}
+
+.maskedInput {
+  display: none;
+  margin-bottom: 2ch;
+}
+
+.maskedInputActive {
+  display: grid;
 }

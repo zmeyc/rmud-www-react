@@ -28,15 +28,19 @@ export const GameText = memo(
 
     useEffect(() => {
       const iframe = iframeRef.current
-      if (iframe === null || isInitialized(iframe)) {
+      if (iframe === null) {
         return
       }
-      setInitialized(iframe)
 
       const contentWindow = iframe.contentWindow
       if (contentWindow === null) {
         return
       }
+
+      if (isInitialized(iframe)) {
+        return
+      }
+      setInitialized(iframe)
 
       const document = contentWindow.document
 

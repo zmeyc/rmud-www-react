@@ -108,6 +108,10 @@ pre {
   font-family: PxPlus_IBM_VGA8, "Lucida Console", "Courier New", monospace;
 }
 
+input {
+  font: inherit;
+}
+
 a {
   color: var(--color-low-cyan);
   text-decoration: inherit;

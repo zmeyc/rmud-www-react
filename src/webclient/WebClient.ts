@@ -4,12 +4,14 @@ import { descriptionForCloseEventCode } from "./CloseEventCode"
 import { AnsiText, GameEvent, StreamCommand } from "./GameEvent"
 import { escapeHTML, replaceBellsWithBlinks } from "./TextUtils"
 
-export type WebClientCallbacks = {
+export interface WebClientCallbacks {
   onResetGameText: () => void
   onAppendToGameText: (text: string) => void
   onGetUserInput: () => string
   onResetUserInput: () => void
   onFocusUserInput: () => void
+  onEchoOff: () => void
+  onEchoOn: () => void
 }
 
 export class WebClient {
@@ -65,7 +67,7 @@ export class WebClient {
   }
 
   sendCommand = (command: string) => {
-    var message = {
+    const message = {
       type: "command",
       text: command,
     }
@@ -86,7 +88,7 @@ export class WebClient {
       return
     }
     const reason = descriptionForCloseEventCode(ev.code)
-    this.callbacks.onAppendToGameText("<br />" + reason)
+    this.callbacks.onAppendToGameText(`<br />${reason}`)
     console.log("Disconnect from: %s", this.url)
   }
 
@@ -95,7 +97,7 @@ export class WebClient {
     if (typeof data !== "string") {
       return
     }
-    const message: GameEvent = JSON.parse(data)
+    const message: GameEvent = JSON.parse(data) as GameEvent
     switch (message.type) {
       case "ansiText":
         this.handleAnsiText(message)
@@ -116,8 +118,10 @@ export class WebClient {
   private handleStreamCommand = (message: StreamCommand) => {
     switch (message.command) {
       case "echoOff":
+        this.callbacks.onEchoOff()
         break
       case "echoOn":
+        this.callbacks.onEchoOn()
         break
       default:
         console.error("Unknown command: %s", message.command)
