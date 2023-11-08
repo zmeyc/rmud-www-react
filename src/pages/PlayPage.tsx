@@ -13,7 +13,7 @@ import { GameText } from "../components/text/GameText"
 import { AutoGrowingTextArea } from "../components/inputs/AutoGrowingTextArea"
 import { AutoGrowingTextAreaElement } from "../components/inputs/AutoGrowingTextAreaElement"
 import { GameTextElement } from "../components/text/GameTextElement"
-import { WebClient, WebClientCallbacks } from "../webclient/WebClient"
+import { WebClient } from "../webclient/WebClient"
 import { MaskedInput } from "../components/inputs/MaskedInput"
 import { MaskedInputElement } from "../components/inputs/MaskedInputElement"
 import { isInitialized, setInitialized } from "../utils/html"
@@ -30,6 +30,8 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
   const userInputRef = useRef<AutoGrowingTextAreaElement>(null)
   const maskedInputRef = useRef<MaskedInputElement>(null)
 
+  const [webClient, setWebClient] = useState<WebClient>()
+
   const [isFirstCommand, setIsFirstCommand] = useState(true)
 
   const inputHadFocusHint = useRef(false)
@@ -45,18 +47,12 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     if (gameText === null) {
       return
     }
-    const iframeWindow = gameText.contentWindow()
-    if (iframeWindow === null) {
-      return
-    }
-
     const userInput = userInputRef.current
     if (userInput === null) {
       return
     }
-
-    const maskedInput = maskedInputRef.current
-    if (maskedInput === null) {
+    const iframeWindow = gameText.contentWindow()
+    if (iframeWindow === null) {
       return
     }
 
@@ -68,7 +64,36 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     userInput.focus()
 
     const listenKeyboardEventsOn = [window, iframeWindow]
-    const callbacks: WebClientCallbacks = {
+    const webClient = new WebClient(listenKeyboardEventsOn)
+    webClient.registerHotkeyListener()
+    webClient.connect("ws://localhost:4040")
+    setWebClient(webClient)
+
+    return () => {
+      webClient.disconnect()
+      webClient.unregisterHotkeyListener()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (webClient === undefined) {
+      return
+    }
+
+    const gameText = gameTextRef.current
+    if (gameText === null) {
+      return
+    }
+    const userInput = userInputRef.current
+    if (userInput === null) {
+      return
+    }
+    const maskedInput = maskedInputRef.current
+    if (maskedInput === null) {
+      return
+    }
+
+    webClient.callbacks = {
       onResetGameText: () => {
         gameText.clear()
       },
@@ -113,15 +138,7 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
         setIsMaskedInput(false)
       },
     }
-    const webClient = new WebClient(listenKeyboardEventsOn, callbacks)
-    webClient.registerHotkeyListener()
-    webClient.connect("ws://localhost:4040")
-
-    return () => {
-      webClient.disconnect()
-      webClient.unregisterHotkeyListener()
-    }
-  }, [isMaskedInput])
+  }, [isMaskedInput, webClient])
 
   useEffect(() => {
     if (!inputHadFocusHint.current) {

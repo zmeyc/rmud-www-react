@@ -10,7 +10,7 @@ module.exports = {
     "preact",
     "prettier",
   ],
-  plugins: ["@typescript-eslint"],
+  plugins: ["@typescript-eslint", "react-hooks-addons"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: true,
@@ -40,6 +40,7 @@ module.exports = {
     "no-useless-constructor": "off",
     "@typescript-eslint/no-useless-constructor": "error",
     "react-hooks/exhaustive-deps": ["error"],
+    "react-hooks-addons/no-unused-deps": ["error"],
   },
   root: true,
 };

@@ -15,16 +15,15 @@ export interface WebClientCallbacks {
 }
 
 export class WebClient {
+  public callbacks?: WebClientCallbacks
+
   private url = ""
   private connected = false
   private ws?: WebSocket
   private ansiFilter = new AnsiFilter()
   private hotkeys: Hotkeys
 
-  constructor(
-    private listenKeyboardEventsOn: Window[],
-    private callbacks: WebClientCallbacks,
-  ) {
+  constructor(private listenKeyboardEventsOn: Window[]) {
     this.hotkeys = new Hotkeys(this.listenKeyboardEventsOn, {
       onSendUserInput: this.handleSendUserInput,
       onFocusUserInput: this.handleFocusUserInput,
@@ -77,18 +76,18 @@ export class WebClient {
   private handleOpen = (_ev: Event) => {
     this.connected = true
     console.log("Connected to: %s", this.url)
-    this.callbacks.onResetGameText()
+    this.callbacks?.onResetGameText()
   }
 
   private handleClose = (ev: CloseEvent) => {
     if (!this.connected) {
-      this.callbacks.onAppendToGameText(
+      this.callbacks?.onAppendToGameText(
         "<br />Не удается установить соединение с сервером.",
       )
       return
     }
     const reason = descriptionForCloseEventCode(ev.code)
-    this.callbacks.onAppendToGameText(`<br />${reason}`)
+    this.callbacks?.onAppendToGameText(`<br />${reason}`)
     console.log("Disconnect from: %s", this.url)
   }
 
@@ -112,16 +111,16 @@ export class WebClient {
     const escaped = escapeHTML(message.text)
     const html = this.ansiFilter.toHtml(escaped)
     const finalText = replaceBellsWithBlinks(html)
-    this.callbacks.onAppendToGameText(finalText)
+    this.callbacks?.onAppendToGameText(finalText)
   }
 
   private handleStreamCommand = (message: StreamCommand) => {
     switch (message.command) {
       case "echoOff":
-        this.callbacks.onEchoOff()
+        this.callbacks?.onEchoOff()
         break
       case "echoOn":
-        this.callbacks.onEchoOn()
+        this.callbacks?.onEchoOn()
         break
       default:
         console.error("Unknown command: %s", message.command)
@@ -130,12 +129,12 @@ export class WebClient {
   }
 
   private handleSendUserInput = () => {
-    const userInput = this.callbacks.onGetUserInput()
+    const userInput = this.callbacks?.onGetUserInput() ?? ""
     this.sendCommand(userInput)
-    this.callbacks.onResetUserInput()
+    this.callbacks?.onResetUserInput()
   }
 
   private handleFocusUserInput = () => {
-    this.callbacks.onFocusUserInput()
+    this.callbacks?.onFocusUserInput()
   }
 }
