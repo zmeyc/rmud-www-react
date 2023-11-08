@@ -9,7 +9,7 @@ export function setInitialized(element: HTMLElement) {
 }
 
 export function loadCssFile(href: string, document: Document) {
-  var cssLink = document.createElement("link")
+  const cssLink = document.createElement("link")
   cssLink.href = href
   cssLink.rel = "stylesheet"
   cssLink.type = "text/css"
@@ -19,7 +19,7 @@ export function loadCssFile(href: string, document: Document) {
 export function injectCssString(css: string, document: Document) {
   const node = document.createTextNode(css)
 
-  var style = document.createElement("style")
+  const style = document.createElement("style")
   style.appendChild(node)
   document.head.appendChild(style)
 }

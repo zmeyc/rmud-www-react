@@ -1,4 +1,4 @@
-export type HotkeyCallbacks = {
+export interface HotkeyCallbacks {
   onSendUserInput: () => void
   onFocusUserInput: () => void
 }
@@ -44,7 +44,7 @@ export class Hotkeys {
     if (inputHandled) {
       // Suppress "double action" if event handled
       event.preventDefault()
-      this.callbacks.onFocusUserInput?.()
+      this.callbacks.onFocusUserInput()
     }
   }
 
@@ -55,7 +55,7 @@ export class Hotkeys {
       case 14: // enter
         if (!event.shiftKey) {
           if (!event.repeat) {
-            this.callbacks.onSendUserInput?.()
+            this.callbacks.onSendUserInput()
           }
           inputHandled = true
         }
@@ -72,7 +72,9 @@ export class Hotkeys {
   private debugLogKeyboardEvent = (event: KeyboardEvent) => {
     console.debug(
       "%s",
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       `target=${event.target}, ` +
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         `currentTarget=${event.currentTarget}, ` +
         `defaultPrevented=${event.defaultPrevented}, ` +
         `key=${event.key}, ` +

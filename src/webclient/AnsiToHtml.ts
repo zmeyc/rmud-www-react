@@ -9,7 +9,7 @@ export interface Options {
   fg: string
   bg: string
   newline: boolean
-  stream: false
+  stream: boolean
   colors: Record<number, string>
 }
 
@@ -21,6 +21,7 @@ interface StickyStackElement {
 
 interface Handler {
   pattern: RegExp
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sub: (substring: string, ...args: any[]) => string
 }
 
@@ -35,34 +36,37 @@ const defaults: Options = {
 
 function getDefaultColors() {
   const colors: Record<number, string> = {
-    [0]: "#000",
-    [1]: "#A00",
-    [2]: "#0A0",
-    [3]: "#A50",
-    [4]: "#00A",
-    [5]: "#A0A",
-    [6]: "#0AA",
-    [7]: "#AAA",
-    [8]: "#555",
-    [9]: "#F55",
-    [10]: "#5F5",
-    [11]: "#FF5",
-    [12]: "#55F",
-    [13]: "#F5F",
-    [14]: "#5FF",
-    [15]: "#FFF",
+    0: "#000",
+    1: "#A00",
+    2: "#0A0",
+    3: "#A50",
+    4: "#00A",
+    5: "#A0A",
+    6: "#0AA",
+    7: "#AAA",
+    8: "#555",
+    9: "#F55",
+    10: "#5F5",
+    11: "#FF5",
+    12: "#55F",
+    13: "#F5F",
+    14: "#5FF",
+    15: "#FFF",
   }
 
   range(0, 5).forEach((red) => {
     range(0, 5).forEach((green) => {
-      range(0, 5).forEach((blue) => setStyleColor(red, green, blue, colors))
+      range(0, 5).forEach((blue) => {
+        setStyleColor(red, green, blue, colors)
+      })
     })
   })
 
-  range(0, 23).forEach(function (gray) {
+  range(0, 23).forEach((gray) => {
     const c = gray + 232
     const l = toHexString(gray * 10 + 8)
 
+    // eslint-disable-next-line prefer-template
     colors[c] = "#" + l + l + l
   })
 
@@ -98,6 +102,7 @@ function toHexString(num: number) {
   let str = num.toString(16)
 
   while (str.length < 2) {
+    // eslint-disable-next-line prefer-template
     str = "0" + str
   }
 
@@ -110,12 +115,13 @@ function toHexString(num: number) {
  * @returns {string}
  */
 function toColorHexString(ref: [number, number, number]) {
-  let results = []
+  const results = []
 
   for (let j = 0, len = ref.length; j < len; j++) {
     results.push(toHexString(ref[j]))
   }
 
+  // eslint-disable-next-line prefer-template
   return "#" + results.join("")
 }
 
@@ -154,23 +160,24 @@ function handleDisplay(stack: string[], codeString: string, options: Options) {
   const code = parseInt(codeString, 10)
   let result
 
-  const codeMap: Record<number, () => string> = {
+  const codeMap: Record<number, (() => string) | undefined> = {
     [-1]: () => "<br/>",
-    [0]: () => (stack.length ? resetStyles(stack) : ""),
-    [1]: () => pushTag(stack, "b"),
-    [3]: () => pushTag(stack, "i"),
-    [4]: () => pushTag(stack, "u"),
-    [8]: () => pushStyle(stack, "display:none"),
-    [9]: () => pushTag(stack, "strike"),
-    [22]: () => closeTag(stack, "b"),
-    [23]: () => closeTag(stack, "i"),
-    [24]: () => closeTag(stack, "u"),
-    [39]: () => pushForegroundColor(stack, options.fg),
-    [49]: () => pushBackgroundColor(stack, options.bg),
+    0: () => (stack.length ? resetStyles(stack) : ""),
+    1: () => pushTag(stack, "b"),
+    3: () => pushTag(stack, "i"),
+    4: () => pushTag(stack, "u"),
+    8: () => pushStyle(stack, "display:none"),
+    9: () => pushTag(stack, "strike"),
+    22: () => closeTag(stack, "b"),
+    23: () => closeTag(stack, "i"),
+    24: () => closeTag(stack, "u"),
+    39: () => pushForegroundColor(stack, options.fg),
+    49: () => pushBackgroundColor(stack, options.bg),
   }
 
-  if (codeMap[code]) {
-    result = codeMap[code]()
+  const handler = codeMap[code]
+  if (handler) {
+    result = handler()
   } else if (4 < code && code < 7) {
     result = pushTag(stack, "blink")
   } else if (29 < code && code < 38) {
@@ -196,17 +203,17 @@ function handleDisplay(stack: string[], codeString: string, options: Options) {
  * @returns {string}
  */
 function resetStyles(stack: string[]) {
-  let stackClone = stack.slice(0)
+  const stackClone = stack.slice(0)
 
   stack.length = 0
 
   return stackClone
     .reverse()
-    .map(function (tag) {
+    .map((tag) => {
       if (tag == "b") {
         return ""
       }
-      return "</" + tag + ">"
+      return `</${tag}>`
     })
     .join("")
 }
@@ -303,6 +310,7 @@ function pushTag(stack: string[], tag: string, style?: string) {
     return ""
   }
 
+  // eslint-disable-next-line prefer-template
   return ["<" + tag, style ? ' style="' + style + '"' : void 0, ">"].join("")
 }
 
@@ -316,10 +324,12 @@ function pushStyle(stack: string[], style: string) {
 }
 
 function pushForegroundColor(stack: string[], color: string) {
+  // eslint-disable-next-line prefer-template
   return pushTag(stack, "span", "color:" + color)
 }
 
 function pushBackgroundColor(stack: string[], color: string) {
+  // eslint-disable-next-line prefer-template
   return pushTag(stack, "span", "background-color:" + color)
 }
 
@@ -339,10 +349,9 @@ function closeTag(stack: string[], tag: string) {
     if (last === "b") {
       return ""
     }
-    return "</" + tag + ">"
-  } else {
-    return ""
+    return `</${tag}>`
   }
+  return ""
 }
 
 /**
@@ -446,7 +455,7 @@ function tokenize(
   }
 
   let handler
-  let results1 = []
+  const results1 = []
   let length = text.length
 
   outer: while (length > 0) {
@@ -491,8 +500,8 @@ function updateStickyStack(
     const notTheSameCategoryChecker = notCategory(categoryForCode(data))
     stickyStack = stickyStack.filter(notTheSameCategoryChecker)
     stickyStack.push({
-      token: token,
-      data: data,
+      token,
+      data,
       category: categoryForCode(data),
     })
   }
@@ -524,7 +533,7 @@ export class AnsiFilter {
     const buf = []
 
     this.stickyStack.forEach((element) => {
-      let output = generateOutput(stack, element.token, element.data, options)
+      const output = generateOutput(stack, element.token, element.data, options)
 
       if (output) {
         buf.push(output)
@@ -532,7 +541,7 @@ export class AnsiFilter {
     })
 
     tokenize(input.join(""), options, (token, data) => {
-      let output = generateOutput(stack, token, data, options)
+      const output = generateOutput(stack, token, data, options)
 
       if (output) {
         buf.push(output)

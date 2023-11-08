@@ -20,6 +20,7 @@ export const HomePage: FC<HomePageProps> = memo(({ className, ...props }) => {
         в июне 1997 года. Изначально использовалась кодовая база{" "}
         <a
           target="_blank"
+          rel="noreferrer"
           href="https://www.circlemud.org"
         >
           CircleMUD

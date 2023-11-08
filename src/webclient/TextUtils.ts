@@ -1,4 +1,5 @@
 export function replaceBellsWithBlinks(text: string) {
+  // eslint-disable-next-line no-control-regex
   return text.replace(/\u0007/g, "<span class='blink'>❗</span>")
 }
 
