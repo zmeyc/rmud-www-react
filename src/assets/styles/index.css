@@ -129,9 +129,9 @@ a::selection {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  /* place-items: center; */
   min-width: 320px;
-  min-height: var(--fullscreen-height);
+  /* min-height: var(--fullscreen-height); */
   overflow-x: hidden;
 }
 
