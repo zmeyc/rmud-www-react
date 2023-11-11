@@ -19,8 +19,8 @@ import { MaskedInputElement } from "../components/inputs/MaskedInputElement"
 import { useVisualViewportHeight } from "../hooks/useVisualViewportHeight"
 import { isInitialized, setInitialized, setStyleVarValue } from "../utils/html"
 import { replaceNewLinesWithSpaces } from "../utils/string"
-import styles from "./PlayPage.module.css"
 import { gameUrl } from "../settings"
+import styles from "./PlayPage.module.css"
 
 export interface PlayPageProps extends ComponentProps<"div"> {
   className?: string
