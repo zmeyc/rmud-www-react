@@ -1,4 +1,5 @@
 .gameText {
+  align-self: start;
   width: 100%;
   margin: 0;
 
@@ -11,7 +12,6 @@
   color: var(--color-light-gray);
   background-color: var(--color-black);
 
-  min-height: calc(100vh - 2ch);
   margin-bottom: 2ch;
 }
 

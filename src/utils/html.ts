@@ -36,3 +36,13 @@ export function isScrolledToBottom(body: HTMLElement) {
 export function scrollToBottom(body: HTMLElement) {
   body.scrollTop = body.scrollHeight - body.clientHeight
 }
+
+export function getStyleVarValue(name: string) {
+  return window
+    .getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+}
+
+export function setStyleVarValue(name: string, value: string) {
+  document.documentElement.style.setProperty(name, value)
+}

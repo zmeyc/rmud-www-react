@@ -33,6 +33,8 @@ p ul li {
 }
 
 :root {
+  --fullscreen-height: 100vh;
+
   --color-black: rgb(0, 0, 0);
   --color-low-blue: rgb(0, 0, 170);
   --color-low-green: rgb(0, 170, 0);
@@ -129,7 +131,7 @@ body {
   display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: var(--fullscreen-height);
   overflow-x: hidden;
 }
 

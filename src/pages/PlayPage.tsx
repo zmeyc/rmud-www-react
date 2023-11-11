@@ -16,9 +16,11 @@ import { GameTextElement } from "../components/text/GameTextElement"
 import { WebClient } from "../webclient/WebClient"
 import { MaskedInput } from "../components/inputs/MaskedInput"
 import { MaskedInputElement } from "../components/inputs/MaskedInputElement"
-import { isInitialized, setInitialized } from "../utils/html"
+import { useVisualViewportHeight } from "../hooks/useVisualViewportHeight"
+import { isInitialized, setInitialized, setStyleVarValue } from "../utils/html"
 import { replaceNewLinesWithSpaces } from "../utils/string"
 import styles from "./PlayPage.module.css"
+import { gameUrl } from "../settings"
 
 export interface PlayPageProps extends ComponentProps<"div"> {
   className?: string
@@ -36,6 +38,12 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
 
   const inputHadFocusHint = useRef(false)
   const [isMaskedInput, setIsMaskedInput] = useState(false)
+
+  const viewportHeight = useVisualViewportHeight()
+
+  useEffect(() => {
+    setStyleVarValue("--fullscreen-height", viewportHeight)
+  }, [viewportHeight])
 
   useEffect(() => {
     const page = pageRef.current
@@ -66,7 +74,7 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     const listenKeyboardEventsOn = [window, iframeWindow]
     const webClient = new WebClient(listenKeyboardEventsOn)
     webClient.registerHotkeyListener()
-    webClient.connect("ws://localhost:4040")
+    webClient.connect(gameUrl())
     setWebClient(webClient)
 
     return () => {
@@ -164,6 +172,9 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
       ref={pageRef}
     >
       <div className={styles.content}>
+        <div className={styles.debugInfo}>
+          {gameUrl()} {window.visualViewport?.height}
+        </div>
         <GameText
           className={styles.gameText}
           ref={gameTextRef}

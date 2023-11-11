@@ -9,18 +9,21 @@ export interface TopMenuProps extends ComponentProps<"ul"> {
 
 export const TopMenu: FC<TopMenuProps> = memo(({ className, ...props }) => {
   return (
-    <ul {...props} className={cn(styles.root, className)}>
+    <ul
+      {...props}
+      className={cn(styles.root, className)}
+    >
       <li>
         <LinkButton href="/">Новости</LinkButton>
-      </li>
-      <li>
-        <LinkButton href="/about">Об игре</LinkButton>
       </li>
       <li>
         <LinkButton href="/links">Cсылки</LinkButton>
       </li>
       <li>
-        <LinkButton href="/play" target="_blank">
+        <LinkButton
+          href="/play"
+          target="_blank"
+        >
           Играть
         </LinkButton>
       </li>

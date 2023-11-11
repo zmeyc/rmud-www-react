@@ -2,9 +2,17 @@
 }
 
 .content {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+.debugInfo {
+  position: absolute;
+  right: 2ch;
+  color: var(--color-low-cyan);
+  background: black;
 }
 
 .gameText {
