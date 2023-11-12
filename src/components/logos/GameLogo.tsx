@@ -5,10 +5,24 @@ import styles from "./GameLogo.module.css"
 
 export const GameLogo: FC = memo(() => {
   return (
-    <div className={styles.root}>
-      <pre className={styles.circle}>{logoCircle}</pre>
-      <pre className={styles.dragon}>{logoDragon}</pre>
-    </div>
+    <figure
+      role="img"
+      aria-label="Логотип игры: дракон"
+      className={styles.root}
+    >
+      <pre
+        aria-hidden
+        className={styles.circle}
+      >
+        {logoCircle}
+      </pre>
+      <pre
+        aria-hidden
+        className={styles.dragon}
+      >
+        {logoDragon}
+      </pre>
+    </figure>
   )
 })
 GameLogo.displayName = "GameLogo"

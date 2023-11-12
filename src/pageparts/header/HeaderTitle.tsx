@@ -3,6 +3,15 @@ import styles from "./HeaderTitle.module.css"
 import title from "../../assets/header-title.txt?raw"
 
 export const HeaderTitle: FC = memo(() => {
-  return <pre className={styles.root}>{title}</pre>
+  return (
+    <pre
+      role="img"
+      lang="en"
+      aria-label="R-MUD"
+      className={styles.root}
+    >
+      {title}
+    </pre>
+  )
 })
 HeaderTitle.displayName = "HeaderTitle"

@@ -4,16 +4,30 @@ import styles from "./LinkButton.module.css"
 
 export interface LinkButtonProps extends ComponentProps<"a"> {
   className?: string
-  activeClassName?: string
+  isActive?: boolean
 }
 
 export const LinkButton: FC<LinkButtonProps> = memo(
-  ({ className, activeClassName = "active", children, ...props }) => {
-    const bracketsStyle = cn(styles.brackets, activeClassName)
+  ({ className, isActive = false, children, ...props }) => {
+    const bracketsStyle = cn(styles.brackets, { [styles.active]: isActive })
     return (
-      <a {...props} className={cn(styles.root, className)}>
-        <span className={bracketsStyle}>[</span>&nbsp;{children}&nbsp;
-        <span className={bracketsStyle}>]</span>
+      <a
+        {...props}
+        className={cn(styles.root, className, { [styles.active]: isActive })}
+      >
+        <span
+          aria-hidden
+          className={bracketsStyle}
+        >
+          [&nbsp;
+        </span>
+        {children}
+        <span
+          aria-hidden
+          className={bracketsStyle}
+        >
+          &nbsp;]
+        </span>
       </a>
     )
   },

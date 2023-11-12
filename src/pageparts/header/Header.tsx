@@ -10,10 +10,14 @@ export interface HeaderProps extends ComponentProps<"div"> {
 
 export const Header: FC<HeaderProps> = memo(({ className, ...props }) => {
   return (
-    <div {...props} className={cn(className, styles.root)}>
+    <header
+      {...props}
+      role="banner"
+      className={cn(className, styles.root)}
+    >
       <GameLogo />
       <HeaderTitle />
-    </div>
+    </header>
   )
 })
 Header.displayName = "Header"

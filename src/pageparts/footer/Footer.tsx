@@ -9,12 +9,13 @@ export interface FooterProps extends ComponentProps<"div"> {
 export const Footer: FC<FooterProps> = memo(({ className, ...props }) => {
   const currentYear = new Date().getFullYear()
   return (
-    <div
+    <footer
       {...props}
+      role="contentinfo"
       className={cn(styles.root, className)}
     >
-      &copy; 1997&nbsp;-&nbsp;{currentYear} Team RMUD
-    </div>
+      &copy; 1997&nbsp;-&nbsp;{currentYear} <span lang="en">Team RMUD</span>
+    </footer>
   )
 })
 Footer.displayName = "Footer"

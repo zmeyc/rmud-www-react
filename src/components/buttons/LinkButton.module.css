@@ -4,6 +4,10 @@
   color: var(--color-low-cyan);
 }
 
+.root.active {
+  color: var(--color-high-cyan);
+}
+
 .root:hover {
   color: var(--color-yellow);
   text-decoration: none;
@@ -17,6 +21,6 @@
   color: var(--color-low-blue);
 }
 
-.bracketsActive {
+.brackets.active {
   color: var(--color-high-blue);
 }
