@@ -1,4 +1,4 @@
-import { ComponentProps, FC, memo } from "preact/compat"
+import { ComponentProps, FC, memo, useEffect, useRef } from "preact/compat"
 import { getCurrentUrl } from "preact-router"
 import cn from "classnames"
 import { LinkButton } from "../../components/buttons/LinkButton"
@@ -9,14 +9,29 @@ export interface TopMenuProps extends ComponentProps<"nav"> {
 }
 
 export const TopMenu: FC<TopMenuProps> = memo(({ className, ...props }) => {
+  const rootRef = useRef<HTMLAnchorElement>(null)
+  const linksRef = useRef<HTMLAnchorElement>(null)
+  const playRef = useRef<HTMLAnchorElement>(null)
+
   const url = getCurrentUrl()
-  console.log(url)
+
+  useEffect(() => {
+    if (url === "/") {
+      rootRef.current?.focus()
+    } else if (url === "/links") {
+      linksRef.current?.focus()
+    } else if (url === "/play") {
+      playRef.current?.focus()
+    }
+  }, [url])
+
   return (
     <nav
       {...props}
       className={cn(styles.root, className)}
     >
       <LinkButton
+        ref={rootRef}
         href="/"
         aria-current={url === "/"}
         isActive={url === "/"}
@@ -24,6 +39,7 @@ export const TopMenu: FC<TopMenuProps> = memo(({ className, ...props }) => {
         Новости
       </LinkButton>
       <LinkButton
+        ref={linksRef}
         href="/links"
         aria-current={url === "/links"}
         isActive={url === "/links"}
@@ -31,6 +47,7 @@ export const TopMenu: FC<TopMenuProps> = memo(({ className, ...props }) => {
         Ссылки
       </LinkButton>
       <LinkButton
+        ref={playRef}
         href="/play"
         aria-current={url === "/play"}
         isActive={url === "/play"}

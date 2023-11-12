@@ -1,4 +1,4 @@
-import { ComponentProps, FC, memo } from "preact/compat"
+import { ComponentProps, FC, forwardRef, memo } from "preact/compat"
 import cn from "classnames"
 import styles from "./LinkButton.module.css"
 
@@ -8,28 +8,31 @@ export interface LinkButtonProps extends ComponentProps<"a"> {
 }
 
 export const LinkButton: FC<LinkButtonProps> = memo(
-  ({ className, isActive = false, children, ...props }) => {
-    const bracketsStyle = cn(styles.brackets, { [styles.active]: isActive })
-    return (
-      <a
-        {...props}
-        className={cn(styles.root, className, { [styles.active]: isActive })}
-      >
-        <span
-          aria-hidden
-          className={bracketsStyle}
+  forwardRef<HTMLAnchorElement, LinkButtonProps>(
+    ({ className, isActive = false, children, ...props }, ref) => {
+      const bracketsStyle = cn(styles.brackets, { [styles.active]: isActive })
+      return (
+        <a
+          {...props}
+          ref={ref}
+          className={cn(styles.root, className, { [styles.active]: isActive })}
         >
-          [&nbsp;
-        </span>
-        {children}
-        <span
-          aria-hidden
-          className={bracketsStyle}
-        >
-          &nbsp;]
-        </span>
-      </a>
-    )
-  },
+          <span
+            aria-hidden
+            className={bracketsStyle}
+          >
+            [&nbsp;
+          </span>
+          {children}
+          <span
+            aria-hidden
+            className={bracketsStyle}
+          >
+            &nbsp;]
+          </span>
+        </a>
+      )
+    },
+  ),
 )
 LinkButton.displayName = "LinkButton"

@@ -21,7 +21,7 @@ export const LinksPage: FC<LinksPageProps> = memo(({ className, ...props }) => {
       <p>
         <ul>
           <li>
-            <a href="https://t.me/rmudchat">Чат в Телеграм</a>
+            <a href="https://t.me/rmudchat">Чат в Telegram</a>
           </li>
           <li>
             <a href="https://t.me/rmudchan">Дневник разработки в Telegram</a>
