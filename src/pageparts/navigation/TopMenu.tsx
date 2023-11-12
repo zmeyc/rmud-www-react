@@ -18,18 +18,21 @@ export const TopMenu: FC<TopMenuProps> = memo(({ className, ...props }) => {
     >
       <LinkButton
         href="/"
+        aria-current={url === "/"}
         isActive={url === "/"}
       >
         Новости
       </LinkButton>
       <LinkButton
         href="/links"
+        aria-current={url === "/links"}
         isActive={url === "/links"}
       >
         Ссылки
       </LinkButton>
       <LinkButton
         href="/play"
+        aria-current={url === "/play"}
         isActive={url === "/play"}
         target="_blank"
       >

@@ -19,7 +19,7 @@ export const Page: FC<PageProps> = memo(({ className, children, ...props }) => {
       <Header className={styles.header} />
       <Content className={styles.content}>
         <TopMenu className={styles.topMenu} />
-        {children}
+        <main aria-live="polite">{children}</main>
       </Content>
       <Footer className={styles.footer} />
     </div>
