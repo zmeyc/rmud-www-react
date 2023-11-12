@@ -24,6 +24,7 @@ p ul li {
 
 p ul li::before {
   content: "\a0*\a0";
+  content: "\a0*\a0" / "";
   color: var(--color-low-green);
 }
 

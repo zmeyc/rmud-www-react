@@ -18,9 +18,7 @@ export const Page: FC<PageProps> = memo(({ className, children, ...props }) => {
     >
       <Header className={styles.header} />
       <Content className={styles.content}>
-        <nav>
-          <TopMenu className={styles.topMenu} />
-        </nav>
+        <TopMenu className={styles.topMenu} />
         {children}
       </Content>
       <Footer className={styles.footer} />

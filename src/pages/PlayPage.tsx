@@ -19,7 +19,7 @@ import { MaskedInputElement } from "../components/inputs/MaskedInputElement"
 import { useVisualViewportHeight } from "../hooks/useVisualViewportHeight"
 import { isInitialized, setInitialized, setStyleVarValue } from "../utils/html"
 import { replaceNewLinesWithSpaces } from "../utils/string"
-import { gameUrl } from "../settings"
+import { gameUrl, isDebug } from "../settings"
 import styles from "./PlayPage.module.css"
 
 export interface PlayPageProps extends ComponentProps<"div"> {
@@ -165,6 +165,12 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     gameTextRef.current?.scrollToBottom()
   }, [])
 
+  const debugInfo = isDebug ? (
+    <div className={styles.debugInfo}>
+      {gameUrl()} {window.visualViewport?.height}
+    </div>
+  ) : null
+
   return (
     <BarePage
       {...props}
@@ -172,9 +178,7 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
       ref={pageRef}
     >
       <div className={styles.content}>
-        <div className={styles.debugInfo}>
-          {gameUrl()} {window.visualViewport?.height}
-        </div>
+        {debugInfo}
         <GameText
           className={styles.gameText}
           ref={gameTextRef}
