@@ -1,14 +1,17 @@
 import { ComponentProps, FC, memo } from "preact/compat"
 import cn from "classnames"
 import { Page } from "../pageparts/pages/Page"
-import styles from "./HomePage.module.css"
 import { LinkButton } from "../components/buttons/LinkButton"
+import { useDocumentTitle } from "../hooks/useDocumentTitle"
+import styles from "./HomePage.module.css"
 
 export interface HomePageProps extends ComponentProps<"div"> {
   className?: string
 }
 
 export const HomePage: FC<HomePageProps> = memo(({ className, ...props }) => {
+  useDocumentTitle("Новости")
+
   return (
     <Page
       {...props}

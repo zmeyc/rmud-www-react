@@ -7,6 +7,11 @@ export interface ContentProps extends ComponentProps<"div"> {
 }
 
 export const Content: FC<ContentProps> = memo(({ className, ...props }) => {
-  return <div {...props} className={cn(className, styles.root)} />
+  return (
+    <div
+      {...props}
+      className={cn(className, styles.root)}
+    />
+  )
 })
 Content.displayName = "Content"

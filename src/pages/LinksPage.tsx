@@ -1,6 +1,7 @@
 import { ComponentProps, FC, memo } from "preact/compat"
 import cn from "classnames"
 import { Page } from "../pageparts/pages/Page"
+import { useDocumentTitle } from "../hooks/useDocumentTitle"
 import styles from "./LinksPage.module.css"
 
 export interface LinksPageProps extends ComponentProps<"div"> {
@@ -8,8 +9,13 @@ export interface LinksPageProps extends ComponentProps<"div"> {
 }
 
 export const LinksPage: FC<LinksPageProps> = memo(({ className, ...props }) => {
+  useDocumentTitle("Ссылки")
+
   return (
-    <Page {...props} className={cn(className, styles.root)}>
+    <Page
+      {...props}
+      className={cn(className, styles.root)}
+    >
       <h1>Ресурсы, посвященные рмаду</h1>
       <h2>Чаты</h2>
       <p>
