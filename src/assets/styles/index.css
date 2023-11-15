@@ -111,8 +111,21 @@ pre {
   font-family: PxPlus_IBM_VGA8, "Lucida Console", "Courier New", monospace;
 }
 
+fieldset {
+  border: 1px solid var(--color-dark-gray);
+  padding: 2ch 1ch;
+}
+
+fieldset legend {
+  padding: 0 1ch;
+}
+
 input {
   font: inherit;
+  padding: 0 1ch;
+  border: none;
+  color: var(--color-white);
+  background-color: var(--color-low-blue);
 }
 
 a {

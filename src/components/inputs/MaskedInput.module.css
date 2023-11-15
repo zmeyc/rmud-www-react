@@ -3,7 +3,7 @@
 
 .root > input {
   padding: 0 1ch;
-  border: 0;
+  border: none;
 
   color: var(--color-white);
   background-color: var(--color-low-blue);

@@ -27,6 +27,7 @@ export class WebClient {
     this.hotkeys = new Hotkeys(this.listenKeyboardEventsOn, {
       onSendUserInput: this.handleSendUserInput,
       onFocusUserInput: this.handleFocusUserInput,
+      onSendCommand: this.handleSendCommand,
     })
   }
 
@@ -136,5 +137,9 @@ export class WebClient {
 
   private handleFocusUserInput = () => {
     this.callbacks?.onFocusUserInput()
+  }
+
+  private handleSendCommand = (command: string) => {
+    this.sendCommand(command)
   }
 }
