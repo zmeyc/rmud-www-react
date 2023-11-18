@@ -10,10 +10,22 @@ export const App: FC = memo(() => {
   return (
     <div className={styles.root}>
       <Router>
-        <HomePage className={styles.page} path="/" />
-        <AboutPage className={styles.page} path="/about" />
-        <LinksPage className={styles.page} path="/links" />
-        <PlayPage className={styles.page} path="/play" />
+        <HomePage
+          className={styles.page}
+          path="/"
+        />
+        <AboutPage
+          className={styles.page}
+          path="/about"
+        />
+        <LinksPage
+          className={styles.page}
+          path="/links"
+        />
+        <PlayPage
+          className={styles.page}
+          path="/play"
+        />
       </Router>
     </div>
   )
