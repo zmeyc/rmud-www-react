@@ -37,7 +37,7 @@ export const HomePage: FC<HomePageProps> = memo(({ className, ...props }) => {
       <p>
         Изначально для игры нужен был MUD клиент, работающий по протоколу
         Telnet. Сейчас этот способ все еще поддерживается, но можно также играть
-        прямо из браузера.
+        прямо из браузера. Адрес игры: telnet rmud.org 3040
       </p>
       <p className={styles.play}>
         <LinkButton href="/play">Начать игру</LinkButton>
