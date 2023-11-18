@@ -1,0 +1,6 @@
+.root {
+}
+
+.root > input {
+  width: 8ch;
+}

@@ -1,0 +1,7 @@
+.root {
+}
+
+.modifiers {
+  display: flex;
+  gap: 1ch;
+}
