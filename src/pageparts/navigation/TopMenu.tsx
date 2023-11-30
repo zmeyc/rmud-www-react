@@ -1,4 +1,12 @@
-import { ComponentProps, FC, memo, useEffect, useRef } from "preact/compat"
+import {
+  ComponentProps,
+  FC,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "preact/compat"
 import { getCurrentUrl } from "preact-router"
 import cn from "classnames"
 import { LinkButton } from "../../components/buttons/LinkButton"
@@ -13,17 +21,28 @@ export const TopMenu: FC<TopMenuProps> = memo(({ className, ...props }) => {
   const linksRef = useRef<HTMLAnchorElement>(null)
   const playRef = useRef<HTMLAnchorElement>(null)
 
+  const [isAutoFocused, setIsAutoFocused] = useState(true)
+
   const url = getCurrentUrl()
 
+  const isRootActive = url === "/"
+  const isLinksActive = url === "/links"
+  const isPlayActive = url === "/play"
+
   useEffect(() => {
-    if (url === "/") {
+    if (isRootActive) {
       rootRef.current?.focus()
-    } else if (url === "/links") {
+    } else if (isLinksActive) {
       linksRef.current?.focus()
-    } else if (url === "/play") {
+    } else if (isPlayActive) {
       playRef.current?.focus()
     }
-  }, [url])
+    setIsAutoFocused(true)
+  }, [isLinksActive, isPlayActive, isRootActive])
+
+  const handleBlur = useCallback(() => {
+    setIsAutoFocused(false)
+  }, [])
 
   return (
     <nav
@@ -31,27 +50,33 @@ export const TopMenu: FC<TopMenuProps> = memo(({ className, ...props }) => {
       className={cn(styles.root, className)}
     >
       <LinkButton
+        className={cn({ [styles.noOutline]: isAutoFocused })}
         ref={rootRef}
         href="/"
-        aria-current={url === "/"}
-        isActive={url === "/"}
+        aria-current={isRootActive}
+        isActive={isRootActive}
+        onBlur={handleBlur}
       >
         Новости
       </LinkButton>
       <LinkButton
+        className={cn({ [styles.noOutline]: isAutoFocused })}
         ref={linksRef}
         href="/links"
-        aria-current={url === "/links"}
-        isActive={url === "/links"}
+        aria-current={isLinksActive}
+        isActive={isLinksActive}
+        onBlur={handleBlur}
       >
         Ссылки
       </LinkButton>
       <LinkButton
+        className={cn({ [styles.noOutline]: isAutoFocused })}
         ref={playRef}
         href="/play"
-        aria-current={url === "/play"}
-        isActive={url === "/play"}
+        aria-current={isPlayActive}
+        isActive={isPlayActive}
         target="_blank"
+        onBlur={handleBlur}
       >
         Играть
       </LinkButton>
