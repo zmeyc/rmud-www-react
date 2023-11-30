@@ -18,16 +18,14 @@ export const LinksPage: FC<LinksPageProps> = memo(({ className, ...props }) => {
     >
       <h1>Ресурсы, посвященные рмаду</h1>
       <h2>Чаты</h2>
-      <p>
-        <ul>
-          <li>
-            <a href="https://t.me/rmudchat">Чат в Telegram</a>
-          </li>
-          <li>
-            <a href="https://t.me/rmudchan">Дневник разработки в Telegram</a>
-          </li>
-        </ul>
-      </p>
+      <ul>
+        <li>
+          <a href="https://t.me/rmudchat">Чат в Telegram</a>
+        </li>
+        <li>
+          <a href="https://t.me/rmudchan">Дневник разработки в Telegram</a>
+        </li>
+      </ul>
     </Page>
   )
 })

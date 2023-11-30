@@ -17,12 +17,12 @@ ul {
   margin-block-end: 2ch;
 }
 
-p ul li {
+main ul li {
   margin-block-start: 2ch;
   margin-block-end: 2ch;
 }
 
-p ul li::before {
+main ul li::before {
   content: "\a0*\a0";
   content: "\a0*\a0" / "";
   color: var(--color-low-green);
