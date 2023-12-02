@@ -59,10 +59,6 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     if (userInput === null) {
       return
     }
-    const iframeWindow = gameText.contentWindow()
-    if (iframeWindow === null) {
-      return
-    }
 
     if (isInitialized(page)) {
       return
@@ -71,7 +67,7 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
 
     userInput.focus()
 
-    const listenKeyboardEventsOn = [window, iframeWindow]
+    const listenKeyboardEventsOn = [window]
     const webClient = new WebClient(listenKeyboardEventsOn)
     webClient.registerHotkeyListener()
     webClient.connect(gameUrl())
@@ -166,9 +162,7 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
   }, [])
 
   const debugInfo = isDebug ? (
-    <div className={styles.debugInfo}>
-      {gameUrl()} {window.visualViewport?.height}
-    </div>
+    <div className={styles.debugInfo}>{gameUrl()}</div>
   ) : null
 
   return (
@@ -177,28 +171,26 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
       className={cn(className, styles.root)}
       ref={pageRef}
     >
-      <div className={styles.content}>
-        {debugInfo}
-        <GameText
-          className={styles.gameText}
-          ref={gameTextRef}
-        />
-        <AutoGrowingTextArea
-          className={cn(styles.commandInput, {
-            [styles.commandInputActive]: !isMaskedInput,
-          })}
-          ref={userInputRef}
-          placeholder={isFirstCommand ? "Введите команду" : undefined}
-          onDidChangeTextAreaSize={handleDidChangeUserInputSize}
-        />
-        <MaskedInput
-          className={cn(styles.maskedInput, {
-            [styles.maskedInputActive]: isMaskedInput,
-          })}
-          ref={maskedInputRef}
-          placeholder="Введите пароль"
-        />
-      </div>
+      {debugInfo}
+      <GameText
+        className={styles.gameText}
+        ref={gameTextRef}
+      />
+      <AutoGrowingTextArea
+        className={cn(styles.commandInput, {
+          [styles.commandInputActive]: !isMaskedInput,
+        })}
+        ref={userInputRef}
+        placeholder={isFirstCommand ? "Введите команду" : undefined}
+        onDidChangeTextAreaSize={handleDidChangeUserInputSize}
+      />
+      <MaskedInput
+        className={cn(styles.maskedInput, {
+          [styles.maskedInputActive]: isMaskedInput,
+        })}
+        ref={maskedInputRef}
+        placeholder="Введите пароль"
+      />
     </BarePage>
   )
 })

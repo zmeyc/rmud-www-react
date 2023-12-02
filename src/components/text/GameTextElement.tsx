@@ -5,48 +5,43 @@ export interface GameTextElement {
   append: (text: string) => void
   clear: () => void
   scrollToBottom: () => void
-  contentWindow: () => Window | null
 }
 
 export function useGameTextElement(
   ref: ForwardedRef<GameTextElement>,
-  iframeRef: Ref<HTMLIFrameElement>,
-  paragraphRef: Ref<HTMLParagraphElement>,
+  containerRef: Ref<HTMLDivElement>,
+  preRef: Ref<HTMLPreElement>,
 ) {
   useImperativeHandle(
     ref,
     () => ({
       append: (text: string) => {
-        const paragraph = paragraphRef.current
-        if (paragraph === null) {
+        const pre = preRef.current
+        if (pre === null) {
           return
         }
-        paragraph.innerHTML += text
+        const span = document.createElement("span")
+        span.role = "alert"
+        span.innerHTML = text
+        pre.appendChild(span)
       },
       clear: () => {
-        const paragraph = paragraphRef.current
-        if (paragraph === null) {
+        const pre = preRef.current
+        if (pre === null) {
           return
         }
-        paragraph.innerHTML = ""
+        pre.innerHTML = ""
       },
       scrollToBottom: () => {
-        const body = iframeRef.current?.contentWindow?.document.body
-        if (body === undefined) {
+        const container = containerRef.current
+        if (container === null) {
           return
         }
-        if (!isScrolledToBottom(body)) {
-          scrollToBottom(body)
+        if (!isScrolledToBottom(container)) {
+          scrollToBottom(container)
         }
-      },
-      contentWindow: () => {
-        const iframe = iframeRef.current
-        if (iframe === null) {
-          return null
-        }
-        return iframe.contentWindow
       },
     }),
-    [iframeRef, paragraphRef],
+    [containerRef, preRef],
   )
 }

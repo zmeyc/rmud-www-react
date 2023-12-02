@@ -16,20 +16,12 @@ export function loadCssFile(href: string, document: Document) {
   document.head.appendChild(cssLink)
 }
 
-export function injectCssString(css: string, document: Document) {
-  const node = document.createTextNode(css)
-
-  const style = document.createElement("style")
-  style.appendChild(node)
-  document.head.appendChild(style)
-}
-
-export function isScrolledToBottom(body: HTMLElement) {
+export function isScrolledToBottom(element: HTMLElement) {
   // clientHeight, scrollTop, and clientHeight are all rounded
   const maximumRoundingError = 3
   return (
-    body.scrollHeight - body.clientHeight <=
-    body.scrollTop + maximumRoundingError
+    element.scrollHeight - element.clientHeight <=
+    element.scrollTop + maximumRoundingError
   )
 }
 

@@ -1,9 +1,6 @@
 .root {
-}
-
-.content {
+  max-height: var(--fullscreen-height);
   position: relative;
-  flex: 1;
   display: flex;
   flex-direction: column;
 }

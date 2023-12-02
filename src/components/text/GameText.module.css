@@ -1,2 +1,30 @@
 .root {
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--color-black);
+  color: var(--color-light-gray);
+
+  overflow-y: scroll;
+}
+
+.placeholder {
+  flex: 1;
+}
+
+.pre {
+  padding-left: 1ch;
+  padding-right: 1ch;
+
+  font-size: 16px;
+  font-family: PxPlus_IBM_VGA8, "Lucida Console", "Courier New", monospace;
+  white-space: pre-wrap;
+
+  margin-top: 2ch;
+  margin-bottom: 2ch;
+}
+
+.gameText::selection {
+  color: var(--color-white);
+  background-color: var(--color-brown);
 }

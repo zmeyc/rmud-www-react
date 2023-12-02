@@ -13,6 +13,7 @@ import {
   useAutoGrowingTextAreaElement,
 } from "./AutoGrowingTextAreaElement"
 import styles from "./AutoGrowingTextArea.module.css"
+import { useScrollWindowToTopWhenElementIsFocused } from "../../hooks/useScrollWindowToTopWhenFocused"
 
 export interface AutoGrowingTextAreaProps extends ComponentProps<"div"> {
   className?: string
@@ -26,6 +27,7 @@ export const AutoGrowingTextArea = memo(
       const textareaRef = useRef<HTMLTextAreaElement>(null)
 
       useAutoGrowingTextAreaElement(ref, textareaRef)
+      useScrollWindowToTopWhenElementIsFocused(textareaRef)
 
       const handleInput = useCallback(
         (event: TargetedEvent<HTMLTextAreaElement>) => {
