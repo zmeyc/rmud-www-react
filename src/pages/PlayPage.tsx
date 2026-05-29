@@ -20,6 +20,7 @@ import { useVisualViewportHeight } from "../hooks/useVisualViewportHeight"
 import { isInitialized, setInitialized, setStyleVarValue } from "../utils/html"
 import { replaceNewLinesWithSpaces } from "../utils/string"
 import { gameUrl, isDebug } from "../settings"
+import { WidgetLayout } from "../widgets/components/WidgetLayout"
 import styles from "./PlayPage.module.css"
 
 export interface PlayPageProps extends ComponentProps<"div"> {
@@ -165,6 +166,18 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     gameTextRef.current?.scrollToBottom()
   }, [])
 
+  const handleSendWidgetCommand = useCallback(
+    (command: string) => {
+      webClient?.sendCommand(command)
+      if (isMaskedInput) {
+        maskedInputRef.current?.focus()
+      } else {
+        userInputRef.current?.focus()
+      }
+    },
+    [isMaskedInput, webClient],
+  )
+
   const debugInfo = isDebug ? (
     <div className={styles.debugInfo}>{gameUrl()}</div>
   ) : null
@@ -176,25 +189,32 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
       ref={pageRef}
     >
       {debugInfo}
-      <GameText
-        className={styles.gameText}
-        ref={gameTextRef}
-      />
-      <AutoGrowingTextArea
-        className={cn(styles.commandInput, {
-          [styles.commandInputActive]: !isMaskedInput,
-        })}
-        ref={userInputRef}
-        placeholder={isFirstCommand ? "Введите команду" : undefined}
-        onDidChangeTextAreaSize={handleDidChangeUserInputSize}
-      />
-      <MaskedInput
-        className={cn(styles.maskedInput, {
-          [styles.maskedInputActive]: isMaskedInput,
-        })}
-        ref={maskedInputRef}
-        placeholder="Введите пароль"
-      />
+      <WidgetLayout
+        className={styles.playSurface}
+        onSendCommand={handleSendWidgetCommand}
+      >
+        <div className={styles.mainArea}>
+          <GameText
+            className={styles.gameText}
+            ref={gameTextRef}
+          />
+          <AutoGrowingTextArea
+            className={cn(styles.commandInput, {
+              [styles.commandInputActive]: !isMaskedInput,
+            })}
+            ref={userInputRef}
+            placeholder={isFirstCommand ? "Введите команду" : undefined}
+            onDidChangeTextAreaSize={handleDidChangeUserInputSize}
+          />
+          <MaskedInput
+            className={cn(styles.maskedInput, {
+              [styles.maskedInputActive]: isMaskedInput,
+            })}
+            ref={maskedInputRef}
+            placeholder="Введите пароль"
+          />
+        </div>
+      </WidgetLayout>
     </BarePage>
   )
 })

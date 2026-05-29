@@ -1,0 +1,172 @@
+.root {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(28ch, 1fr) minmax(40ch, 120ch) minmax(28ch, 1fr);
+  gap: 0;
+  min-height: 0;
+  background: rgb(85, 85, 85, 0.3);
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1ch;
+  min-width: 0;
+  min-height: 0;
+  padding: 1ch;
+  overflow: hidden;
+  background: rgb(85, 85, 85, 0.3);
+}
+
+.lane {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1ch;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  align-content: flex-start;
+  align-items: flex-start;
+}
+
+.bottomLane {
+  flex-wrap: wrap-reverse;
+  align-content: flex-start;
+  align-items: flex-start;
+}
+
+.rightPanel .lane {
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.leftPanel .lane {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+
+.widget {
+  flex: 0 0 auto;
+  min-width: 25ch;
+  max-width: 100%;
+  border: none;
+  color: var(--color-light-gray);
+  background-color: var(--color-black);
+  box-shadow: inset 0 0 0 1px var(--color-dark-gray);
+}
+
+.dragging {
+  box-shadow: inset 0 0 0 1px var(--color-yellow);
+  opacity: 0.55;
+}
+
+.widgetTitleBar {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  padding: 0 1ch;
+  color: var(--color-white);
+  background-color: var(--color-low-blue);
+  cursor: move;
+}
+
+.dragHandle {
+  color: var(--color-low-cyan);
+}
+
+.widgetTitle {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-yellow);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+.widgetBody {
+  padding: 1ch;
+}
+
+.widgetTitleButton,
+.addButton {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  color: var(--color-light-gray);
+  background-color: transparent;
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  transition: none;
+}
+
+.widgetTitleButton:hover,
+.widgetTitleButton:focus,
+.addButton:hover,
+.addButton:focus {
+  color: var(--color-yellow);
+  outline: none;
+}
+
+.addButton {
+  flex: 0 0 auto;
+  color: var(--color-dark-gray);
+}
+
+.bottomLane .addButton {
+  align-self: flex-start;
+}
+
+@media (max-width: 860px) {
+  .root {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: none;
+    min-height: 12ch;
+    max-height: 28ch;
+    padding: 1ch 0;
+    overflow: hidden;
+  }
+
+  .lane {
+    max-height: 26ch;
+    align-content: flex-start;
+    align-items: flex-start;
+    overflow: auto;
+  }
+
+  .leftPanel .lane,
+  .rightPanel .lane {
+    flex-direction: row;
+  }
+
+  .topLane {
+    justify-content: flex-start;
+  }
+
+  .leftPanel .bottomLane,
+  .rightPanel .bottomLane {
+    flex-direction: row-reverse;
+    padding-right: 1ch;
+  }
+
+  .leftPanel .topLane,
+  .rightPanel .topLane {
+    padding-left: 1ch;
+  }
+
+  .bottomLane {
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .bottomLane .addButton {
+    align-self: flex-start;
+  }
+}

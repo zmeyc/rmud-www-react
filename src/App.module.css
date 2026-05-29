@@ -12,3 +12,10 @@
   max-width: 120ch;
   background: var(--color-black);
 }
+
+.playPage {
+  flex: 1;
+  min-width: 10ch;
+  width: 100%;
+  background: rgb(85, 85, 85, 0.3);
+}

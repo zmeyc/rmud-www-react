@@ -23,7 +23,7 @@ export const App: FC = memo(() => {
           path="/links"
         />
         <PlayPage
-          className={styles.page}
+          className={styles.playPage}
           path="/play"
         />
       </Router>

@@ -1,15 +1,17 @@
+import {
+  goDownCommand,
+  goEastCommand,
+  goNorthCommand,
+  goSouthCommand,
+  goUpCommand,
+  goWestCommand,
+} from "./MovementCommands"
+
 export interface HotkeyCallbacks {
   onSendUserInput: () => void
   onFocusUserInput: () => void
   onSendCommand: (command: string) => void
 }
-
-const goUpCommand = "подняться"
-const goDownCommand = "опуститься"
-const goWestCommand = "запад"
-const goNorthCommand = "север"
-const goEastCommand = "восток"
-const goSouthCommand = "юг"
 
 export class Hotkeys {
   constructor(

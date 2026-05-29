@@ -1,0 +1,48 @@
+.root {
+  display: grid;
+  grid-template-columns: repeat(3, 7ch);
+  grid-template-rows: repeat(3, 3ch);
+  gap: 1ch;
+}
+
+.button {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  color: var(--color-white);
+  background-color: var(--color-black);
+  box-shadow: inset 0 0 0 1px var(--color-dark-gray);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+  transition: none;
+}
+
+.button:hover,
+.button:focus {
+  box-shadow: inset 0 0 0 1px var(--color-yellow);
+  color: var(--color-yellow);
+  outline: none;
+}
+
+.button:active {
+  color: var(--color-white);
+  background-color: var(--color-low-blue);
+}
+
+.secondaryButton {
+  color: var(--color-dark-gray);
+}
+
+.secondaryButton:hover,
+.secondaryButton:focus {
+  color: var(--color-low-cyan);
+}
+
+.label {
+  color: inherit;
+}
