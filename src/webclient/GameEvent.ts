@@ -8,4 +8,10 @@ export interface StreamCommand {
   command: string
 }
 
-export type GameEvent = AnsiText | StreamCommand
+export interface Link {
+  type: "link"
+  text: string
+  href: string
+}
+
+export type GameEvent = AnsiText | StreamCommand | Link

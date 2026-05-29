@@ -105,6 +105,10 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
         gameText.append(text)
         gameText.scrollToBottom()
       },
+      onAppendLinkToGameText: (text: string, href: string) => {
+        gameText.appendLink(text, href)
+        gameText.scrollToBottom()
+      },
       onGetUserInput: (): string => {
         return isMaskedInput ? maskedInput.value() : userInput.value()
       },

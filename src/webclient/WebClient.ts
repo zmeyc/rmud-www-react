@@ -1,12 +1,13 @@
 import { AnsiFilter } from "./AnsiToHtml"
 import { Hotkeys } from "./Hotkeys"
 import { descriptionForCloseEventCode } from "./CloseEventCode"
-import { AnsiText, GameEvent, StreamCommand } from "./GameEvent"
+import { AnsiText, GameEvent, Link, StreamCommand } from "./GameEvent"
 import { escapeHTML, replaceBellsWithBlinks } from "./TextUtils"
 
 export interface WebClientCallbacks {
   onResetGameText: () => void
   onAppendToGameText: (text: string) => void
+  onAppendLinkToGameText: (text: string, href: string) => void
   onGetUserInput: () => string
   onResetUserInput: () => void
   onFocusUserInput: () => void
@@ -105,6 +106,9 @@ export class WebClient {
       case "streamCommand":
         this.handleStreamCommand(message)
         break
+      case "link":
+        this.handleLink(message)
+        break
     }
   }
 
@@ -127,6 +131,10 @@ export class WebClient {
         console.error("Unknown command: %s", message.command)
         break
     }
+  }
+
+  private handleLink = (message: Link) => {
+    this.callbacks?.onAppendLinkToGameText(message.text, message.href)
   }
 
   private handleSendUserInput = () => {
