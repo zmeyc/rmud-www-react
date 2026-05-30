@@ -8,31 +8,41 @@
 }
 
 .panel {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 1ch;
   min-width: 0;
   min-height: 0;
   padding: 1ch;
-  overflow: hidden;
+  overflow: auto;
   background: rgb(85, 85, 85, 0.3);
 }
 
 .lane {
   display: flex;
+  flex: 0 0 auto;
   flex-wrap: wrap;
   gap: 1ch;
   min-width: 0;
-  min-height: 0;
-  overflow: auto;
+  min-height: 2ch;
+  padding: 0.5ch;
+  margin: -0.5ch;
+  overflow: visible;
   align-content: flex-start;
   align-items: flex-start;
+  box-shadow: inset 0 0 0 1px transparent;
 }
 
 .bottomLane {
   flex-wrap: wrap-reverse;
+  margin-top: auto;
   align-content: flex-start;
   align-items: flex-start;
+}
+
+.dropTarget {
+  background: rgb(0, 170, 170, 0.12);
+  box-shadow: inset 0 0 0 1px var(--color-low-cyan);
 }
 
 .rightPanel .lane {
@@ -124,19 +134,17 @@
   }
 
   .panel {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: none;
+    flex-direction: row;
+    align-items: flex-start;
     min-height: 12ch;
     max-height: 28ch;
     padding: 1ch 0;
-    overflow: hidden;
+    overflow: auto;
   }
 
   .lane {
-    max-height: 26ch;
     align-content: flex-start;
     align-items: flex-start;
-    overflow: auto;
   }
 
   .leftPanel .lane,
@@ -151,6 +159,8 @@
   .leftPanel .bottomLane,
   .rightPanel .bottomLane {
     flex-direction: row-reverse;
+    margin-top: -0.5ch;
+    margin-left: auto;
     padding-right: 1ch;
   }
 
