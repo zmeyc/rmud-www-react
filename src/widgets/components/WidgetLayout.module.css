@@ -71,7 +71,7 @@
 
 .innerTopRightLane {
   top: 1ch;
-  right: 1ch;
+  right: 2ch;
   width: min(34ch, calc(50% - 2ch));
   flex-direction: row-reverse;
   flex-wrap: nowrap;
@@ -82,7 +82,7 @@
 }
 
 .innerBottomRightLane {
-  right: 1ch;
+  right: 2ch;
   bottom: 7ch;
   width: min(34ch, calc(50% - 2ch));
   height: min(38ch, calc(100% - 10ch));
@@ -90,6 +90,10 @@
   flex-wrap: nowrap;
   align-items: flex-end;
   justify-content: flex-start;
+}
+
+.innerBottomRightLane .widget {
+  align-self: flex-end;
 }
 
 .bottomLane {
