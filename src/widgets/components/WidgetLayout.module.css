@@ -45,6 +45,42 @@
   box-shadow: inset 0 0 0 1px var(--color-low-cyan);
 }
 
+.insertionMarker {
+  position: relative;
+  flex: 0 0 1.5ch;
+  align-self: stretch;
+  min-width: 2ch;
+  box-sizing: border-box;
+  border: 1px dashed var(--color-yellow);
+  background: rgb(255, 255, 85, 0.14);
+  box-shadow: inset 0 0 0 1px rgb(0, 170, 170, 0.35);
+  pointer-events: none;
+  animation: insertionMarkerIn 120ms ease-out;
+}
+
+.insertionMarker::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0.75ch;
+  right: 0.75ch;
+  height: 1px;
+  background: var(--color-yellow);
+  transform: translateY(-50%);
+}
+
+@keyframes insertionMarkerIn {
+  from {
+    flex-basis: 0;
+    opacity: 0;
+  }
+
+  to {
+    flex-basis: 1.5ch;
+    opacity: 1;
+  }
+}
+
 .leftPanel .lane,
 .rightPanel .lane {
   flex-direction: column;
@@ -66,6 +102,10 @@
   color: var(--color-light-gray);
   background-color: var(--color-black);
   box-shadow: inset 0 0 0 1px var(--color-dark-gray);
+  transition:
+    opacity 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
 }
 
 .compactWidget {
@@ -181,6 +221,21 @@
     align-items: flex-start;
   }
 
+  .insertionMarker {
+    align-self: stretch;
+    min-height: 4ch;
+  }
+
+  .insertionMarker::before {
+    top: 0.5ch;
+    bottom: 0.5ch;
+    left: 50%;
+    right: auto;
+    width: 1px;
+    height: auto;
+    transform: translateX(-50%);
+  }
+
   .topLane {
     justify-content: flex-start;
   }
@@ -217,5 +272,11 @@
   .leftPanel .widgetBody {
     justify-items: start;
     text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .insertionMarker {
+    animation: none;
   }
 }

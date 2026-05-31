@@ -1,5 +1,6 @@
 import {
   FC,
+  Fragment,
   TargetedEvent,
   memo,
   useCallback,
@@ -47,6 +48,7 @@ interface WidgetLaneProps extends WidgetPanelProps {
 interface WidgetCardProps {
   widget: WidgetInstance
   draggingWidgetId?: string
+  onInsertionTargetChange: (target?: WidgetInsertionTarget) => void
   onDragEnd: () => void
   onDragStart: (widgetId: string) => void
   onDropWidget: (
@@ -58,6 +60,21 @@ interface WidgetCardProps {
   onRemoveWidget: (widgetId: string) => void
   onSendCommand: (command: string) => void
   onToggleWidgetMinimized: (widgetId: string) => void
+}
+
+interface WidgetInsertionTarget {
+  targetWidgetId?: string
+  position: InsertPosition
+}
+
+function insertionTargetsAreEqual(
+  first?: WidgetInsertionTarget,
+  second?: WidgetInsertionTarget,
+) {
+  return (
+    first?.targetWidgetId === second?.targetWidgetId &&
+    first?.position === second?.position
+  )
 }
 
 const dragDataType = "application/x-rmud-widget-id"
@@ -115,6 +132,7 @@ const WidgetCard: FC<WidgetCardProps> = memo(
     draggingWidgetId,
     onDragEnd,
     onDragStart,
+    onInsertionTargetChange,
     onDropWidget,
     onRemoveWidget,
     onSendCommand,
@@ -139,17 +157,29 @@ const WidgetCard: FC<WidgetCardProps> = memo(
     const handleDragOver = useCallback(
       (event: TargetedDragEvent<HTMLElement>) => {
         event.preventDefault()
+
+        if (draggingWidgetId === undefined || draggingWidgetId === widget.id) {
+          onInsertionTargetChange(undefined)
+          return
+        }
+
+        onInsertionTargetChange({
+          targetWidgetId: widget.id,
+          position: insertPositionForDrop(event),
+        })
+
         if (event.dataTransfer !== null) {
           event.dataTransfer.dropEffect = "move"
         }
       },
-      [],
+      [draggingWidgetId, onInsertionTargetChange, widget.id],
     )
 
     const handleDrop = useCallback(
       (event: TargetedDragEvent<HTMLElement>) => {
         event.preventDefault()
         event.stopPropagation()
+        onInsertionTargetChange(undefined)
 
         const draggedWidgetId = readDraggedWidgetId(event)
         if (draggedWidgetId.length === 0 || draggedWidgetId === widget.id) {
@@ -166,7 +196,13 @@ const WidgetCard: FC<WidgetCardProps> = memo(
           insertPositionForDrop(event),
         )
       },
-      [onDropWidget, widget.alignment, widget.id, widget.side],
+      [
+        onDropWidget,
+        onInsertionTargetChange,
+        widget.alignment,
+        widget.id,
+        widget.side,
+      ],
     )
 
     const minimizeControl = widget.isMinimized ? "[=]" : "[_]"
@@ -239,16 +275,42 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
     widgets,
   }) => {
     const laneWidgets = widgetsForLane(widgets, side, alignment)
+    const [insertionTarget, setInsertionTarget] =
+      useState<WidgetInsertionTarget>()
+    const updateInsertionTarget = useCallback(
+      (target?: WidgetInsertionTarget) => {
+        setInsertionTarget((currentTarget) =>
+          insertionTargetsAreEqual(currentTarget, target)
+            ? currentTarget
+            : target,
+        )
+      },
+      [],
+    )
+    const showInsertionMarker =
+      draggingWidgetId !== undefined &&
+      isDropTarget &&
+      insertionTarget !== undefined
+
+    useEffect(() => {
+      if (draggingWidgetId === undefined || !isDropTarget) {
+        updateInsertionTarget(undefined)
+      }
+    }, [draggingWidgetId, isDropTarget, updateInsertionTarget])
 
     const handleDragOver = useCallback(
       (event: TargetedDragEvent<HTMLDivElement>) => {
         event.preventDefault()
         onDropTargetChange(alignment)
+        if (event.target === event.currentTarget) {
+          updateInsertionTarget(undefined)
+        }
+
         if (event.dataTransfer !== null) {
           event.dataTransfer.dropEffect = "move"
         }
       },
-      [alignment, onDropTargetChange],
+      [alignment, onDropTargetChange, updateInsertionTarget],
     )
 
     const handleDragLeave = useCallback(
@@ -262,14 +324,16 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
         }
 
         onDropTargetChange(undefined)
+        updateInsertionTarget(undefined)
       },
-      [onDropTargetChange],
+      [onDropTargetChange, updateInsertionTarget],
     )
 
     const handleDrop = useCallback(
       (event: TargetedDragEvent<HTMLDivElement>) => {
         event.preventDefault()
         onDropTargetChange(undefined)
+        updateInsertionTarget(undefined)
 
         const draggedWidgetId = readDraggedWidgetId(event)
         if (draggedWidgetId.length === 0) {
@@ -278,18 +342,25 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
 
         onDropWidget(draggedWidgetId, { side, alignment })
       },
-      [alignment, onDropTargetChange, onDropWidget, side],
+      [
+        alignment,
+        onDropTargetChange,
+        onDropWidget,
+        side,
+        updateInsertionTarget,
+      ],
     )
 
     const handleAddDragOver = useCallback(
       (event: TargetedDragEvent<HTMLButtonElement>) => {
         event.preventDefault()
         onDropTargetChange(alignment)
+        updateInsertionTarget(undefined)
         if (event.dataTransfer !== null) {
           event.dataTransfer.dropEffect = "move"
         }
       },
-      [alignment, onDropTargetChange],
+      [alignment, onDropTargetChange, updateInsertionTarget],
     )
 
     const handleAddDrop = useCallback(
@@ -297,6 +368,7 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
         event.preventDefault()
         event.stopPropagation()
         onDropTargetChange(undefined)
+        updateInsertionTarget(undefined)
 
         const draggedWidgetId = readDraggedWidgetId(event)
         if (draggedWidgetId.length === 0) {
@@ -305,7 +377,13 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
 
         onDropWidget(draggedWidgetId, { side, alignment })
       },
-      [alignment, onDropTargetChange, onDropWidget, side],
+      [
+        alignment,
+        onDropTargetChange,
+        onDropWidget,
+        side,
+        updateInsertionTarget,
+      ],
     )
 
     return (
@@ -320,32 +398,61 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        {laneWidgets.map((widget) => (
-          <WidgetCard
-            draggingWidgetId={draggingWidgetId}
-            key={widget.id}
-            widget={widget}
-            onDragEnd={onDragEnd}
-            onDragStart={onDragStart}
-            onDropWidget={onDropWidget}
-            onRemoveWidget={onRemoveWidget}
-            onSendCommand={onSendCommand}
-            onToggleWidgetMinimized={onToggleWidgetMinimized}
+        {laneWidgets.map((widget) => {
+          const isInsertionTarget =
+            showInsertionMarker && insertionTarget.targetWidgetId === widget.id
+
+          return (
+            <Fragment key={widget.id}>
+              {isInsertionTarget &&
+              insertionTarget.position === "before" ? (
+                <div
+                  aria-hidden="true"
+                  className={styles.insertionMarker}
+                />
+              ) : null}
+              <WidgetCard
+                draggingWidgetId={draggingWidgetId}
+                widget={widget}
+                onDragEnd={onDragEnd}
+                onDragStart={onDragStart}
+                onDropWidget={onDropWidget}
+                onInsertionTargetChange={updateInsertionTarget}
+                onRemoveWidget={onRemoveWidget}
+                onSendCommand={onSendCommand}
+                onToggleWidgetMinimized={onToggleWidgetMinimized}
+              />
+              {isInsertionTarget && insertionTarget.position === "after" ? (
+                <div
+                  aria-hidden="true"
+                  className={styles.insertionMarker}
+                />
+              ) : null}
+            </Fragment>
+          )
+        })}
+        {showInsertionMarker &&
+        insertionTarget.targetWidgetId === undefined ? (
+          <div
+            aria-hidden="true"
+            className={styles.insertionMarker}
           />
-        ))}
-        <button
-          aria-label="Добавить виджет"
-          className={styles.addButton}
-          title="Добавить виджет"
-          type="button"
-          onClick={() => {
-            onAddClick({ side, alignment })
-          }}
-          onDragOver={handleAddDragOver}
-          onDrop={handleAddDrop}
-        >
-          [+]
-        </button>
+        ) : null}
+        {draggingWidgetId === undefined ? (
+          <button
+            aria-label="Добавить виджет"
+            className={styles.addButton}
+            title="Добавить виджет"
+            type="button"
+            onClick={() => {
+              onAddClick({ side, alignment })
+            }}
+            onDragOver={handleAddDragOver}
+            onDrop={handleAddDrop}
+          >
+            [+]
+          </button>
+        ) : null}
       </div>
     )
   },
