@@ -37,7 +37,10 @@
 }
 
 .mirrorWidget {
-  margin: 0 0 1ch;
+  position: absolute;
+  right: 0;
+  bottom: calc(var(--play-input-area-height, 4ch) + 1ch);
+  left: 0;
 }
 
 .inputArea {
