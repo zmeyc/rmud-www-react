@@ -122,6 +122,10 @@
   opacity: 0.55;
 }
 
+.dragActive .widget > * {
+  pointer-events: none;
+}
+
 .widgetTitleBar {
   display: flex;
   align-items: center;

@@ -90,12 +90,24 @@ function normalizeInsertionTarget(
   const targetableWidgets = laneWidgets.filter(
     (widget) => widget.id !== draggingWidgetId,
   )
+  const draggedWidgetIndex = laneWidgets.findIndex(
+    (widget) => widget.id === draggingWidgetId,
+  )
+  const isSameLaneDrag = draggedWidgetIndex !== -1
 
   if (targetableWidgets.length === 0) {
+    if (isSameLaneDrag) {
+      return undefined
+    }
+
     return target.targetWidgetId === undefined ? target : undefined
   }
 
   if (target.targetWidgetId === undefined) {
+    if (isSameLaneDrag && draggedWidgetIndex === targetableWidgets.length) {
+      return undefined
+    }
+
     return {
       targetWidgetId: targetableWidgets[targetableWidgets.length - 1].id,
       position: "after",
@@ -111,6 +123,10 @@ function normalizeInsertionTarget(
   }
 
   const insertAt = targetIndex + (target.position === "after" ? 1 : 0)
+  if (isSameLaneDrag && insertAt === draggedWidgetIndex) {
+    return undefined
+  }
+
   if (insertAt >= targetableWidgets.length) {
     return {
       targetWidgetId: targetableWidgets[targetableWidgets.length - 1].id,
@@ -510,7 +526,6 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
         }
 
         if (target === undefined) {
-          onDropWidget(draggedWidgetId, { side, alignment })
           return
         }
 
@@ -634,6 +649,7 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
         className={cn(styles.lane, {
           [styles.topLane]: alignment === "top",
           [styles.bottomLane]: alignment === "bottom",
+          [styles.dragActive]: draggingWidgetId !== undefined,
           [styles.dropTarget]:
             draggingWidgetId !== undefined && isDropTarget,
         })}
