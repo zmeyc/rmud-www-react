@@ -29,7 +29,7 @@ export const GameText = memo(
           return
         }
 
-        onScrolledToBottomChange?.(isScrolledToBottom(container))
+        onScrolledToBottomChange?.(isScrolledToBottom(container, 0))
       }, [onScrolledToBottomChange])
 
       return (

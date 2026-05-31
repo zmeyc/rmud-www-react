@@ -284,11 +284,11 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     <div className={styles.debugInfo}>{gameUrl()}</div>
   ) : null
   const mirrorWidget =
-    isMirrorEnabled &&
-    !isGameTextScrolledToBottom &&
-    gameTextMirrorItems.length > 0 ? (
+    isMirrorEnabled && gameTextMirrorItems.length > 0 ? (
       <MirrorWidget
-        className={styles.mirrorWidget}
+        className={cn(styles.mirrorWidget, {
+          [styles.mirrorWidgetHidden]: isGameTextScrolledToBottom,
+        })}
         items={gameTextMirrorItems}
       />
     ) : null

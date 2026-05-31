@@ -259,7 +259,7 @@ export const MirrorWidget: FC<MirrorWidgetProps> = memo(
         {...props}
         className={cn(styles.root, className)}
         ref={rootRef}
-        style={{ height: `calc(${lineCount * 2}ch + 2ch)` }}
+        style={{ height: `${lineCount * 2}ch` }}
       >
         <button
           aria-label="Изменить высоту зеркала"

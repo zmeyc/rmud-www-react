@@ -16,9 +16,11 @@ export function loadCssFile(href: string, document: Document) {
   document.head.appendChild(cssLink)
 }
 
-export function isScrolledToBottom(element: HTMLElement) {
+export function isScrolledToBottom(
+  element: HTMLElement,
+  maximumRoundingError = 3,
+) {
   // clientHeight, scrollTop, and clientHeight are all rounded
-  const maximumRoundingError = 3
   return (
     element.scrollHeight - element.clientHeight <=
     element.scrollTop + maximumRoundingError

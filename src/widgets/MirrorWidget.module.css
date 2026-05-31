@@ -5,12 +5,12 @@
   background-color: var(--color-black);
   box-shadow:
     inset 0 1px 0 var(--color-dark-gray),
-    inset 0 -1px 0 var(--color-dark-gray);
+    0 2ch 0 var(--color-black);
 }
 
 .pre {
   height: 100%;
-  padding: 1ch;
+  padding: 0 1ch;
   margin: 0;
   font-size: 16px;
   font-family: PxPlus_IBM_VGA8, "Lucida Console", "Courier New", monospace;

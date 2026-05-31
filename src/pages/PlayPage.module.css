@@ -38,12 +38,20 @@
 
 .mirrorWidget {
   position: absolute;
+  z-index: 1;
   right: 8px;
-  bottom: calc(var(--play-input-area-height, 4ch) + 1ch);
+  bottom: calc(var(--play-input-area-height, 4ch) + 2ch);
   left: 0;
 }
 
+.mirrorWidgetHidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .inputArea {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: flex-end;
   gap: 1ch;
