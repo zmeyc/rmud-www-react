@@ -152,6 +152,11 @@
   justify-content: flex-start;
 }
 
+.leftPanel .dragActive,
+.rightPanel .dragActive {
+  min-height: 24ch;
+}
+
 .leftPanel .bottomLane,
 .rightPanel .bottomLane {
   flex-direction: column-reverse;
@@ -290,6 +295,12 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
+  }
+
+  .leftPanel .dragActive,
+  .rightPanel .dragActive {
+    min-width: 24ch;
+    min-height: 10ch;
   }
 
   .innerLane {
