@@ -21,11 +21,27 @@ import { isInitialized, setInitialized, setStyleVarValue } from "../utils/html"
 import { replaceNewLinesWithSpaces } from "../utils/string"
 import { gameUrl, isDebug } from "../settings"
 import { WidgetLayout } from "../widgets/components/WidgetLayout"
+import { MirrorWidget, type MirrorWidgetItem } from "../widgets/MirrorWidget"
+import { usePlayMirrorEnabled } from "./hooks/usePlayMirrorEnabled"
+import { PlaySettingsDialog } from "./PlaySettingsDialog"
 import styles from "./PlayPage.module.css"
 
 export interface PlayPageProps extends ComponentProps<"div"> {
   className?: string
 }
+
+type GameTextMirrorItemContent =
+  | {
+      type: "html"
+      html: string
+    }
+  | {
+      type: "link"
+      text: string
+      href: string
+    }
+
+const maximumGameTextMirrorItems = 120
 
 export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
   const pageRef = useRef<HTMLDivElement>(null)
@@ -39,6 +55,14 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
 
   const inputHadFocusHint = useRef(false)
   const [isMaskedInput, setIsMaskedInput] = useState(false)
+  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false)
+  const [isMirrorEnabled, setIsMirrorEnabled] = usePlayMirrorEnabled()
+  const gameTextMirrorItemId = useRef(0)
+  const [gameTextMirrorItems, setGameTextMirrorItems] = useState<
+    MirrorWidgetItem[]
+  >([])
+  const [isGameTextScrolledToBottom, setIsGameTextScrolledToBottom] =
+    useState(true)
 
   const viewportHeight = useVisualViewportHeight()
 
@@ -80,6 +104,41 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     }
   }, [])
 
+  const appendGameTextMirrorItem = useCallback(
+    (item: GameTextMirrorItemContent) => {
+      const id = gameTextMirrorItemId.current
+      gameTextMirrorItemId.current += 1
+
+      setGameTextMirrorItems((currentItems) => {
+        const nextItems = [...currentItems, { id, ...item }]
+
+        return nextItems.length > maximumGameTextMirrorItems
+          ? nextItems.slice(nextItems.length - maximumGameTextMirrorItems)
+          : nextItems
+      })
+    },
+    [],
+  )
+
+  const appendGameText = useCallback(
+    (append: (gameText: GameTextElement) => void) => {
+      const gameText = gameTextRef.current
+      if (gameText === null) {
+        return
+      }
+
+      const wasScrolledToBottom = gameText.isScrolledToBottom()
+      append(gameText)
+
+      if (wasScrolledToBottom) {
+        gameText.scrollToBottom()
+      }
+
+      setIsGameTextScrolledToBottom(gameText.isScrolledToBottom())
+    },
+    [],
+  )
+
   useEffect(() => {
     if (webClient === undefined) {
       return
@@ -101,14 +160,21 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     webClient.callbacks = {
       onResetGameText: () => {
         gameText.clear()
+        gameTextMirrorItemId.current = 0
+        setGameTextMirrorItems([])
+        setIsGameTextScrolledToBottom(true)
       },
       onAppendToGameText: (text: string) => {
-        gameText.append(text)
-        gameText.scrollToBottom()
+        appendGameText((gameText) => {
+          gameText.append(text)
+        })
+        appendGameTextMirrorItem({ type: "html", html: text })
       },
       onAppendLinkToGameText: (text: string, href: string) => {
-        gameText.appendLink(text, href)
-        gameText.scrollToBottom()
+        appendGameText((gameText) => {
+          gameText.appendLink(text, href)
+        })
+        appendGameTextMirrorItem({ type: "link", text, href })
       },
       onGetUserInput: (): string => {
         return isMaskedInput ? maskedInput.value() : userInput.value()
@@ -147,7 +213,7 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
         setIsMaskedInput(false)
       },
     }
-  }, [isMaskedInput, webClient])
+  }, [appendGameText, appendGameTextMirrorItem, isMaskedInput, webClient])
 
   useEffect(() => {
     if (!inputHadFocusHint.current) {
@@ -163,8 +229,17 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
   }, [isMaskedInput])
 
   const handleDidChangeUserInputSize = useCallback(() => {
-    gameTextRef.current?.scrollToBottom()
-  }, [])
+    const gameText = gameTextRef.current
+    if (gameText === null) {
+      return
+    }
+
+    if (isGameTextScrolledToBottom) {
+      gameText.scrollToBottom()
+    }
+
+    setIsGameTextScrolledToBottom(gameText.isScrolledToBottom())
+  }, [isGameTextScrolledToBottom])
 
   const handleSendWidgetCommand = useCallback(
     (command: string) => {
@@ -178,8 +253,37 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     [isMaskedInput, webClient],
   )
 
+  const handleOpenSettingsDialog = useCallback(() => {
+    setIsSettingsDialogOpen(true)
+  }, [])
+
+  const handleCloseSettingsDialog = useCallback(() => {
+    setIsSettingsDialogOpen(false)
+    if (isMaskedInput) {
+      maskedInputRef.current?.focus()
+    } else {
+      userInputRef.current?.focus()
+    }
+  }, [isMaskedInput])
+
   const debugInfo = isDebug ? (
     <div className={styles.debugInfo}>{gameUrl()}</div>
+  ) : null
+  const mirrorWidget =
+    isMirrorEnabled &&
+    !isGameTextScrolledToBottom &&
+    gameTextMirrorItems.length > 0 ? (
+      <MirrorWidget
+        className={styles.mirrorWidget}
+        items={gameTextMirrorItems}
+      />
+    ) : null
+  const settingsDialog = isSettingsDialogOpen ? (
+    <PlaySettingsDialog
+      isMirrorEnabled={isMirrorEnabled}
+      onClose={handleCloseSettingsDialog}
+      onMirrorEnabledChange={setIsMirrorEnabled}
+    />
   ) : null
 
   return (
@@ -197,24 +301,38 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
           <GameText
             className={styles.gameText}
             ref={gameTextRef}
+            onScrolledToBottomChange={setIsGameTextScrolledToBottom}
           />
-          <AutoGrowingTextArea
-            className={cn(styles.commandInput, {
-              [styles.commandInputActive]: !isMaskedInput,
-            })}
-            ref={userInputRef}
-            placeholder={isFirstCommand ? "Введите команду" : undefined}
-            onDidChangeTextAreaSize={handleDidChangeUserInputSize}
-          />
-          <MaskedInput
-            className={cn(styles.maskedInput, {
-              [styles.maskedInputActive]: isMaskedInput,
-            })}
-            ref={maskedInputRef}
-            placeholder="Введите пароль"
-          />
+          {mirrorWidget}
+          <div className={styles.inputArea}>
+            <AutoGrowingTextArea
+              className={cn(styles.commandInput, {
+                [styles.commandInputActive]: !isMaskedInput,
+              })}
+              ref={userInputRef}
+              placeholder={isFirstCommand ? "Введите команду" : undefined}
+              onDidChangeTextAreaSize={handleDidChangeUserInputSize}
+            />
+            <MaskedInput
+              className={cn(styles.maskedInput, {
+                [styles.maskedInputActive]: isMaskedInput,
+              })}
+              ref={maskedInputRef}
+              placeholder="Введите пароль"
+            />
+            <button
+              aria-label="Настройки"
+              className={styles.settingsButton}
+              title="Настройки"
+              type="button"
+              onClick={handleOpenSettingsDialog}
+            >
+              [*]
+            </button>
+          </div>
         </div>
       </WidgetLayout>
+      {settingsDialog}
     </BarePage>
   )
 })

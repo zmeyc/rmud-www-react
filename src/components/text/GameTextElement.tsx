@@ -5,6 +5,7 @@ export interface GameTextElement {
   append: (text: string) => void
   appendLink: (text: string, href: string) => void
   clear: () => void
+  isScrolledToBottom: () => boolean
   scrollToBottom: () => void
 }
 
@@ -60,6 +61,14 @@ export function useGameTextElement(
           return
         }
         pre.innerHTML = ""
+      },
+      isScrolledToBottom: () => {
+        const container = containerRef.current
+        if (container === null) {
+          return true
+        }
+
+        return isScrolledToBottom(container)
       },
       scrollToBottom: () => {
         const container = containerRef.current

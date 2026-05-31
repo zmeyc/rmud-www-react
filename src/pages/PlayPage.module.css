@@ -36,9 +36,22 @@
   min-height: 0;
 }
 
+.mirrorWidget {
+  margin: 0 0 1ch;
+}
+
+.inputArea {
+  display: flex;
+  align-items: flex-end;
+  gap: 1ch;
+  min-width: 0;
+  margin-bottom: 2ch;
+}
+
 .commandInput {
   display: none;
-  margin-bottom: 2ch;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .commandInputActive {
@@ -47,9 +60,40 @@
 
 .maskedInput {
   display: none;
-  margin-bottom: 2ch;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .maskedInputActive {
   display: grid;
+}
+
+.maskedInputActive > input {
+  width: 100%;
+}
+
+.settingsButton {
+  flex: 0 0 auto;
+  padding: 0 1ch;
+  margin-right: 2ch;
+  border: none;
+  border-radius: 0;
+  color: var(--color-light-gray);
+  background-color: var(--color-black);
+  box-shadow: inset 0 0 0 1px var(--color-dark-gray);
+  font: inherit;
+  cursor: pointer;
+  transition: none;
+}
+
+.settingsButton:hover,
+.settingsButton:focus {
+  color: var(--color-yellow);
+  box-shadow: inset 0 0 0 1px var(--color-yellow);
+  outline: none;
+}
+
+.settingsButton:active {
+  color: var(--color-white);
+  background-color: var(--color-low-blue);
 }

@@ -26,7 +26,7 @@ export const AutoGrowingTextArea = memo(
     ({ className, placeholder, onDidChangeTextAreaSize, ...props }, ref) => {
       const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-      useAutoGrowingTextAreaElement(ref, textareaRef)
+      useAutoGrowingTextAreaElement(ref, textareaRef, onDidChangeTextAreaSize)
       useScrollWindowToTopWhenElementIsFocused(textareaRef)
 
       const handleInput = useCallback(
