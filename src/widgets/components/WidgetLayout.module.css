@@ -222,10 +222,14 @@
 .widgetTitle {
   flex: 1;
   min-width: 0;
-  color: var(--color-yellow);
+  color: var(--color-light-gray);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: clip;
+}
+
+.innerLane .widgetTitleBar {
+  background-color: var(--color-dark-gray);
 }
 
 .widgetBody {
