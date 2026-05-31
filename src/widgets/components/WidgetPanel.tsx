@@ -392,11 +392,13 @@ const WidgetCard: FC<WidgetCardProps> = memo(
             [x]
           </button>
         </header>
-        {widget.isMinimized ? null : (
-          <div className={styles.widgetBody}>
-            {renderWidgetContent(widget, onSendCommand)}
-          </div>
-        )}
+        <div
+          className={cn(styles.widgetBody, {
+            [styles.minimizedWidgetBody]: widget.isMinimized,
+          })}
+        >
+          {renderWidgetContent(widget, onSendCommand)}
+        </div>
       </article>
     )
   },
