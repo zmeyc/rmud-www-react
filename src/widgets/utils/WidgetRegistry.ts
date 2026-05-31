@@ -7,6 +7,10 @@ export interface WidgetDefinition {
 
 export const widgetDefinitions: WidgetDefinition[] = [
   {
+    type: "datetime",
+    title: "Дата",
+  },
+  {
     type: "movement",
     title: "Движение",
   },
@@ -14,6 +18,8 @@ export const widgetDefinitions: WidgetDefinition[] = [
 
 export function titleForWidgetType(type: WidgetType) {
   switch (type) {
+    case "datetime":
+      return "Дата"
     case "movement":
       return "Движение"
   }

@@ -7,6 +7,7 @@ import {
   useState,
 } from "preact/compat"
 import cn from "classnames"
+import { DateTimeWidget } from "../DateTimeWidget"
 import { MovementWidget } from "../MovementWidget"
 import { titleForWidgetType } from "../utils/WidgetRegistry"
 import { widgetsForLane } from "../utils/WidgetLayoutStorage"
@@ -96,6 +97,8 @@ function renderWidgetContent(
   onSendCommand: (command: string) => void,
 ) {
   switch (widget.type) {
+    case "datetime":
+      return <DateTimeWidget />
     case "movement":
       return <MovementWidget onSendCommand={onSendCommand} />
   }

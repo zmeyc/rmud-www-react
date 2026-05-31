@@ -1,0 +1,30 @@
+.root {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2ch;
+  align-items: center;
+  width: 21ch;
+  max-width: 100%;
+}
+
+.dateBlock {
+  display: grid;
+  gap: 1ch;
+  min-width: 0;
+}
+
+.time {
+  color: var(--color-light-gray);
+  line-height: inherit;
+  white-space: nowrap;
+}
+
+.date {
+  color: var(--color-dark-gray);
+  overflow-wrap: anywhere;
+}
+
+.weekday {
+  color: var(--color-dark-gray);
+  overflow-wrap: anywhere;
+}

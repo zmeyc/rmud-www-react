@@ -1,6 +1,6 @@
 export type WidgetAlignment = "top" | "bottom"
 export type WidgetSide = "left" | "right"
-export type WidgetType = "movement"
+export type WidgetType = "datetime" | "movement"
 
 export interface WidgetInstance {
   id: string
