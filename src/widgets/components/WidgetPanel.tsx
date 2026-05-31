@@ -62,6 +62,11 @@ interface WidgetCardProps {
 
 const dragDataType = "application/x-rmud-widget-id"
 
+const compactWidgetTypes: Record<WidgetInstance["type"], boolean> = {
+  datetime: true,
+  movement: true,
+}
+
 type TargetedDragEvent<T extends HTMLElement> = TargetedEvent<T, DragEvent>
 
 function readDraggedWidgetId<T extends HTMLElement>(event: TargetedDragEvent<T>) {
@@ -171,6 +176,7 @@ const WidgetCard: FC<WidgetCardProps> = memo(
     return (
       <article
         className={cn(styles.widget, {
+          [styles.compactWidget]: compactWidgetTypes[widget.type],
           [styles.dragging]: draggingWidgetId === widget.id,
         })}
         draggable
