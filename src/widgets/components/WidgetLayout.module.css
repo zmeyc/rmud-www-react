@@ -60,25 +60,25 @@
 .innerTopLeftLane {
   top: 1ch;
   left: 1ch;
-  right: 50%;
+  width: min(34ch, calc(50% - 2ch));
   flex-direction: row;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: flex-start;
   min-width: 12ch;
-  min-height: 5ch;
+  height: min(24ch, calc(100% - 10ch));
 }
 
 .innerTopRightLane {
   top: 1ch;
   right: 1ch;
-  left: 50%;
+  width: min(34ch, calc(50% - 2ch));
   flex-direction: row-reverse;
   flex-wrap: nowrap;
   align-items: flex-start;
   justify-content: flex-start;
   min-width: 12ch;
-  min-height: 5ch;
+  height: min(24ch, calc(100% - 10ch));
 }
 
 .innerBottomRightLane {
@@ -125,6 +125,11 @@
   height: 1px;
   background: var(--color-yellow);
   transform: translateY(-50%);
+}
+
+.innerTopLeftLane > .insertionMarker,
+.innerTopRightLane > .insertionMarker {
+  height: 100%;
 }
 
 @keyframes insertionMarkerIn {
@@ -293,11 +298,11 @@
   }
 
   .innerTopLeftLane {
-    right: 35%;
+    width: min(30ch, calc(45% - 2ch));
   }
 
   .innerTopRightLane {
-    left: 35%;
+    width: min(30ch, calc(45% - 2ch));
   }
 
   .innerBottomRightLane {
