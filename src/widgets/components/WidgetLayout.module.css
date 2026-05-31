@@ -53,7 +53,8 @@
   pointer-events: auto;
 }
 
-.innerLane .widget {
+.innerLane .widget,
+.innerLane .addButton {
   pointer-events: auto;
 }
 

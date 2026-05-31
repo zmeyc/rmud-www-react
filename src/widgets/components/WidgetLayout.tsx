@@ -143,7 +143,6 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
             className={cn(styles.innerLane, styles.innerTopLeftLane)}
             isDropTarget={innerDropTargetLane === "game-top-left"}
             lane="game-top-left"
-            showAddButton={false}
             onDropTargetChange={setInnerDropTargetLane}
           />
           <WidgetLane
@@ -151,7 +150,6 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
             className={cn(styles.innerLane, styles.innerTopRightLane)}
             isDropTarget={innerDropTargetLane === "game-top-right"}
             lane="game-top-right"
-            showAddButton={false}
             onDropTargetChange={setInnerDropTargetLane}
           />
           <WidgetLane
@@ -159,7 +157,6 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
             className={cn(styles.innerLane, styles.innerBottomRightLane)}
             isDropTarget={innerDropTargetLane === "game-bottom-right"}
             lane="game-bottom-right"
-            showAddButton={false}
             onDropTargetChange={setInnerDropTargetLane}
           />
         </main>
