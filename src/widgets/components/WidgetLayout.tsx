@@ -4,6 +4,7 @@ import {
   memo,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "preact/compat"
 import cn from "classnames"
@@ -18,8 +19,13 @@ import {
   normalizeWidgetOrders,
   saveWidgetLayout,
 } from "../utils/WidgetLayoutStorage"
-import { WidgetPanel } from "./WidgetPanel"
-import { WidgetAddTarget, WidgetType } from "../types/WidgetTypes"
+import { WidgetLane, WidgetPanel } from "./WidgetPanel"
+import {
+  WidgetAddTarget,
+  WidgetLaneId,
+  WidgetType,
+} from "../types/WidgetTypes"
+import { useIsElementNarrowerThanCharacters } from "../../hooks/useIsElementNarrowerThanCharacters"
 import styles from "./WidgetLayout.module.css"
 
 export interface WidgetLayoutProps extends ComponentProps<"div"> {
@@ -29,13 +35,26 @@ export interface WidgetLayoutProps extends ComponentProps<"div"> {
 
 export const WidgetLayout: FC<WidgetLayoutProps> = memo(
   ({ className, children, onSendCommand, ...props }) => {
+    const contentAreaRef = useRef<HTMLElement>(null)
     const [widgets, setWidgets] = useState(loadWidgetLayout)
     const [addTarget, setAddTarget] = useState<WidgetAddTarget>()
     const [draggingWidgetId, setDraggingWidgetId] = useState<string>()
+    const [innerDropTargetLane, setInnerDropTargetLane] =
+      useState<WidgetLaneId>()
+    const isNarrowContentArea = useIsElementNarrowerThanCharacters(
+      contentAreaRef,
+      110,
+    )
 
     useEffect(() => {
       saveWidgetLayout(widgets)
     }, [widgets])
+
+    useEffect(() => {
+      if (draggingWidgetId === undefined) {
+        setInnerDropTargetLane(undefined)
+      }
+    }, [draggingWidgetId])
 
     const handleAddWidget = useCallback(
       (type: WidgetType) => {
@@ -112,7 +131,35 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
           {...panelProps}
           side="left"
         />
-        {children}
+        <main
+          className={cn(styles.contentArea, {
+            [styles.narrowContentArea]: isNarrowContentArea,
+          })}
+          ref={contentAreaRef}
+        >
+          {children}
+          <WidgetLane
+            {...panelProps}
+            className={cn(styles.innerLane, styles.innerTopLeftLane)}
+            isDropTarget={innerDropTargetLane === "game-top-left"}
+            lane="game-top-left"
+            onDropTargetChange={setInnerDropTargetLane}
+          />
+          <WidgetLane
+            {...panelProps}
+            className={cn(styles.innerLane, styles.innerTopRightLane)}
+            isDropTarget={innerDropTargetLane === "game-top-right"}
+            lane="game-top-right"
+            onDropTargetChange={setInnerDropTargetLane}
+          />
+          <WidgetLane
+            {...panelProps}
+            className={cn(styles.innerLane, styles.innerBottomRightLane)}
+            isDropTarget={innerDropTargetLane === "game-bottom-right"}
+            lane="game-bottom-right"
+            onDropTargetChange={setInnerDropTargetLane}
+          />
+        </main>
         <WidgetPanel
           {...panelProps}
           side="right"

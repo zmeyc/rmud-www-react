@@ -18,6 +18,14 @@
   background: rgb(85, 85, 85, 0.3);
 }
 
+.contentArea {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .lane {
   display: flex;
   flex: 0 0 auto;
@@ -33,6 +41,62 @@
   box-shadow: inset 0 0 0 1px transparent;
 }
 
+.innerLane {
+  position: absolute;
+  z-index: 1;
+  max-width: calc(100% - 2ch);
+  max-height: calc(100% - 2ch);
+  pointer-events: none;
+}
+
+.innerLane.dragActive {
+  pointer-events: auto;
+}
+
+.innerLane .widget,
+.innerLane .addButton {
+  pointer-events: auto;
+}
+
+.innerTopLeftLane {
+  top: 1ch;
+  left: 1ch;
+  width: min(34ch, calc(50% - 2ch));
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: 12ch;
+  height: min(24ch, calc(100% - 10ch));
+}
+
+.innerTopRightLane {
+  top: 1ch;
+  right: 2ch;
+  width: min(34ch, calc(50% - 2ch));
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: 12ch;
+  height: min(24ch, calc(100% - 10ch));
+}
+
+.innerBottomRightLane {
+  right: 2ch;
+  bottom: 7ch;
+  width: min(34ch, calc(50% - 2ch));
+  height: min(38ch, calc(100% - 10ch));
+  flex-direction: column-reverse;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.innerBottomRightLane .widget {
+  align-self: flex-end;
+}
+
 .bottomLane {
   flex-wrap: wrap-reverse;
   margin-top: auto;
@@ -45,12 +109,62 @@
   box-shadow: inset 0 0 0 1px var(--color-low-cyan);
 }
 
+.insertionMarker {
+  position: relative;
+  flex: 0 0 1.5ch;
+  align-self: stretch;
+  min-width: 2ch;
+  box-sizing: border-box;
+  border: 1px dashed var(--color-yellow);
+  background: rgb(255, 255, 85, 0.14);
+  box-shadow: inset 0 0 0 1px rgb(0, 170, 170, 0.35);
+  animation: insertionMarkerIn 120ms ease-out;
+}
+
+.insertionMarker::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0.75ch;
+  right: 0.75ch;
+  height: 1px;
+  background: var(--color-yellow);
+  transform: translateY(-50%);
+}
+
+.innerTopLeftLane > .insertionMarker,
+.innerTopRightLane > .insertionMarker {
+  height: 100%;
+}
+
+@keyframes insertionMarkerIn {
+  from {
+    flex-basis: 0;
+    opacity: 0;
+  }
+
+  to {
+    flex-basis: 1.5ch;
+    opacity: 1;
+  }
+}
+
+.narrowContentArea .innerBottomRightLane {
+  bottom: 27ch;
+  height: min(18ch, calc(100% - 30ch));
+}
+
 .leftPanel .lane,
 .rightPanel .lane {
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: stretch;
   justify-content: flex-start;
+}
+
+.leftPanel .dragActive,
+.rightPanel .dragActive {
+  min-height: 24ch;
 }
 
 .leftPanel .bottomLane,
@@ -66,6 +180,10 @@
   color: var(--color-light-gray);
   background-color: var(--color-black);
   box-shadow: inset 0 0 0 1px var(--color-dark-gray);
+  transition:
+    opacity 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
 }
 
 .compactWidget {
@@ -81,6 +199,10 @@
 .dragging {
   box-shadow: inset 0 0 0 1px var(--color-yellow);
   opacity: 0.55;
+}
+
+.dragActive .widget > * {
+  pointer-events: none;
 }
 
 .widgetTitleBar {
@@ -160,6 +282,10 @@
     flex-direction: column;
   }
 
+  .contentArea {
+    flex: 1 0 45ch;
+  }
+
   .panel {
     flex-direction: row;
     align-items: flex-start;
@@ -179,6 +305,46 @@
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
+  }
+
+  .leftPanel .dragActive,
+  .rightPanel .dragActive {
+    min-width: 24ch;
+    min-height: 10ch;
+  }
+
+  .innerLane {
+    max-width: calc(100% - 2ch);
+    max-height: calc(100% - 2ch);
+  }
+
+  .innerTopLeftLane {
+    width: min(30ch, calc(45% - 2ch));
+  }
+
+  .innerTopRightLane {
+    width: min(30ch, calc(45% - 2ch));
+  }
+
+  .innerBottomRightLane {
+    bottom: 7ch;
+    width: min(30ch, calc(60% - 2ch));
+    height: min(26ch, calc(100% - 10ch));
+  }
+
+  .insertionMarker {
+    align-self: stretch;
+    min-height: 4ch;
+  }
+
+  .insertionMarker::before {
+    top: 0.5ch;
+    bottom: 0.5ch;
+    left: 50%;
+    right: auto;
+    width: 1px;
+    height: auto;
+    transform: translateX(-50%);
   }
 
   .topLane {
@@ -217,5 +383,11 @@
   .leftPanel .widgetBody {
     justify-items: start;
     text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .insertionMarker {
+    animation: none;
   }
 }

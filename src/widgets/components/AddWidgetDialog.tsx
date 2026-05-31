@@ -17,12 +17,23 @@ export interface AddWidgetDialogProps extends ComponentProps<"div"> {
   onClose: () => void
 }
 
-function labelForSide(target: WidgetAddTarget) {
-  return target.side === "left" ? "левая панель" : "правая панель"
-}
-
-function labelForAlignment(target: WidgetAddTarget) {
-  return target.alignment === "top" ? "верхний ряд" : "нижний ряд"
+function labelForTarget(target: WidgetAddTarget) {
+  switch (target.lane) {
+    case "panel-left-top":
+      return "левая панель / верхний ряд"
+    case "panel-left-bottom":
+      return "левая панель / нижний ряд"
+    case "panel-right-top":
+      return "правая панель / верхний ряд"
+    case "panel-right-bottom":
+      return "правая панель / нижний ряд"
+    case "game-top-left":
+      return "игровая область / верх слева"
+    case "game-top-right":
+      return "игровая область / верх справа"
+    case "game-bottom-right":
+      return "игровая область / низ справа"
+  }
 }
 
 export const AddWidgetDialog: FC<AddWidgetDialogProps> = memo(
@@ -61,7 +72,7 @@ export const AddWidgetDialog: FC<AddWidgetDialogProps> = memo(
           </header>
           <div className={styles.body}>
             <div className={styles.target}>
-              {labelForSide(addTarget)} / {labelForAlignment(addTarget)}
+              {labelForTarget(addTarget)}
             </div>
             <div className={styles.widgetList}>
               {widgetDefinitions.map((definition) => (
