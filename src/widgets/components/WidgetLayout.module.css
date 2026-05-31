@@ -148,6 +148,11 @@
   }
 }
 
+.narrowContentArea .innerBottomRightLane {
+  bottom: 27ch;
+  height: min(18ch, calc(100% - 30ch));
+}
+
 .leftPanel .lane,
 .rightPanel .lane {
   flex-direction: column;

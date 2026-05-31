@@ -4,6 +4,7 @@ import {
   memo,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "preact/compat"
 import cn from "classnames"
@@ -24,6 +25,7 @@ import {
   WidgetLaneId,
   WidgetType,
 } from "../types/WidgetTypes"
+import { useIsElementNarrowerThanCharacters } from "../../hooks/useIsElementNarrowerThanCharacters"
 import styles from "./WidgetLayout.module.css"
 
 export interface WidgetLayoutProps extends ComponentProps<"div"> {
@@ -33,11 +35,16 @@ export interface WidgetLayoutProps extends ComponentProps<"div"> {
 
 export const WidgetLayout: FC<WidgetLayoutProps> = memo(
   ({ className, children, onSendCommand, ...props }) => {
+    const contentAreaRef = useRef<HTMLElement>(null)
     const [widgets, setWidgets] = useState(loadWidgetLayout)
     const [addTarget, setAddTarget] = useState<WidgetAddTarget>()
     const [draggingWidgetId, setDraggingWidgetId] = useState<string>()
     const [innerDropTargetLane, setInnerDropTargetLane] =
       useState<WidgetLaneId>()
+    const isNarrowContentArea = useIsElementNarrowerThanCharacters(
+      contentAreaRef,
+      110,
+    )
 
     useEffect(() => {
       saveWidgetLayout(widgets)
@@ -124,7 +131,12 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
           {...panelProps}
           side="left"
         />
-        <main className={styles.contentArea}>
+        <main
+          className={cn(styles.contentArea, {
+            [styles.narrowContentArea]: isNarrowContentArea,
+          })}
+          ref={contentAreaRef}
+        >
           {children}
           <WidgetLane
             {...panelProps}
