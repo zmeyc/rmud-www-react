@@ -84,9 +84,9 @@
 
 .innerBottomRightLane {
   right: 2ch;
-  bottom: 7ch;
+  bottom: calc(var(--play-input-area-height, 4ch) + 3ch);
   width: min(34ch, calc(50% - 2ch));
-  height: min(38ch, calc(100% - 10ch));
+  height: min(38ch, calc(100% - var(--play-input-area-height, 4ch) - 6ch));
   flex-direction: column-reverse;
   flex-wrap: nowrap;
   align-items: flex-end;
@@ -150,8 +150,8 @@
 }
 
 .narrowContentArea .innerBottomRightLane {
-  bottom: 27ch;
-  height: min(18ch, calc(100% - 30ch));
+  bottom: calc(var(--play-input-area-height, 4ch) + 23ch);
+  height: min(18ch, calc(100% - var(--play-input-area-height, 4ch) - 26ch));
 }
 
 .leftPanel .lane,
@@ -327,9 +327,9 @@
   }
 
   .innerBottomRightLane {
-    bottom: 7ch;
+    bottom: calc(var(--play-input-area-height, 4ch) + 3ch);
     width: min(30ch, calc(60% - 2ch));
-    height: min(26ch, calc(100% - 10ch));
+    height: min(26ch, calc(100% - var(--play-input-area-height, 4ch) - 6ch));
   }
 
   .insertionMarker {

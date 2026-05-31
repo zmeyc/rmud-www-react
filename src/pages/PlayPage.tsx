@@ -16,6 +16,7 @@ import { GameTextElement } from "../components/text/GameTextElement"
 import { WebClient } from "../webclient/WebClient"
 import { MaskedInput } from "../components/inputs/MaskedInput"
 import { MaskedInputElement } from "../components/inputs/MaskedInputElement"
+import { useElementOuterHeight } from "../hooks/useElementOuterHeight"
 import { useVisualViewportHeight } from "../hooks/useVisualViewportHeight"
 import { isInitialized, setInitialized, setStyleVarValue } from "../utils/html"
 import { replaceNewLinesWithSpaces } from "../utils/string"
@@ -46,6 +47,7 @@ const maximumGameTextMirrorItems = 120
 export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
   const pageRef = useRef<HTMLDivElement>(null)
   const gameTextRef = useRef<GameTextElement>(null)
+  const inputAreaRef = useRef<HTMLDivElement>(null)
   const userInputRef = useRef<AutoGrowingTextAreaElement>(null)
   const maskedInputRef = useRef<MaskedInputElement>(null)
 
@@ -65,10 +67,22 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     useState(true)
 
   const viewportHeight = useVisualViewportHeight()
+  const inputAreaOuterHeight = useElementOuterHeight(inputAreaRef)
 
   useEffect(() => {
     setStyleVarValue("--fullscreen-height", viewportHeight)
   }, [viewportHeight])
+
+  useEffect(() => {
+    if (inputAreaOuterHeight <= 0) {
+      return
+    }
+
+    pageRef.current?.style.setProperty(
+      "--play-input-area-height",
+      `${inputAreaOuterHeight}px`,
+    )
+  }, [inputAreaOuterHeight])
 
   useEffect(() => {
     const page = pageRef.current
@@ -304,7 +318,10 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
             onScrolledToBottomChange={setIsGameTextScrolledToBottom}
           />
           {mirrorWidget}
-          <div className={styles.inputArea}>
+          <div
+            className={styles.inputArea}
+            ref={inputAreaRef}
+          >
             <AutoGrowingTextArea
               className={cn(styles.commandInput, {
                 [styles.commandInputActive]: !isMaskedInput,
