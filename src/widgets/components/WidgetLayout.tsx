@@ -18,8 +18,12 @@ import {
   normalizeWidgetOrders,
   saveWidgetLayout,
 } from "../utils/WidgetLayoutStorage"
-import { WidgetPanel } from "./WidgetPanel"
-import { WidgetAddTarget, WidgetType } from "../types/WidgetTypes"
+import { WidgetLane, WidgetPanel } from "./WidgetPanel"
+import {
+  WidgetAddTarget,
+  WidgetLaneId,
+  WidgetType,
+} from "../types/WidgetTypes"
 import styles from "./WidgetLayout.module.css"
 
 export interface WidgetLayoutProps extends ComponentProps<"div"> {
@@ -32,10 +36,18 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
     const [widgets, setWidgets] = useState(loadWidgetLayout)
     const [addTarget, setAddTarget] = useState<WidgetAddTarget>()
     const [draggingWidgetId, setDraggingWidgetId] = useState<string>()
+    const [innerDropTargetLane, setInnerDropTargetLane] =
+      useState<WidgetLaneId>()
 
     useEffect(() => {
       saveWidgetLayout(widgets)
     }, [widgets])
+
+    useEffect(() => {
+      if (draggingWidgetId === undefined) {
+        setInnerDropTargetLane(undefined)
+      }
+    }, [draggingWidgetId])
 
     const handleAddWidget = useCallback(
       (type: WidgetType) => {
@@ -112,7 +124,33 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
           {...panelProps}
           side="left"
         />
-        {children}
+        <main className={styles.contentArea}>
+          {children}
+          <WidgetLane
+            {...panelProps}
+            className={cn(styles.innerLane, styles.innerTopLeftLane)}
+            isDropTarget={innerDropTargetLane === "game-top-left"}
+            lane="game-top-left"
+            showAddButton={false}
+            onDropTargetChange={setInnerDropTargetLane}
+          />
+          <WidgetLane
+            {...panelProps}
+            className={cn(styles.innerLane, styles.innerTopRightLane)}
+            isDropTarget={innerDropTargetLane === "game-top-right"}
+            lane="game-top-right"
+            showAddButton={false}
+            onDropTargetChange={setInnerDropTargetLane}
+          />
+          <WidgetLane
+            {...panelProps}
+            className={cn(styles.innerLane, styles.innerBottomRightLane)}
+            isDropTarget={innerDropTargetLane === "game-bottom-right"}
+            lane="game-bottom-right"
+            showAddButton={false}
+            onDropTargetChange={setInnerDropTargetLane}
+          />
+        </main>
         <WidgetPanel
           {...panelProps}
           side="right"

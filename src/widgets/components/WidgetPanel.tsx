@@ -16,14 +16,13 @@ import { widgetsForLane } from "../utils/WidgetLayoutStorage"
 import { InsertPosition } from "../utils/WidgetLayoutActions"
 import {
   WidgetAddTarget,
-  WidgetAlignment,
   WidgetInstance,
+  WidgetLaneId,
   WidgetSide,
 } from "../types/WidgetTypes"
 import styles from "./WidgetLayout.module.css"
 
-export interface WidgetPanelProps {
-  side: WidgetSide
+interface WidgetLaneCommonProps {
   widgets: WidgetInstance[]
   draggingWidgetId?: string
   onAddClick: (target: WidgetAddTarget) => void
@@ -40,10 +39,16 @@ export interface WidgetPanelProps {
   onToggleWidgetMinimized: (widgetId: string) => void
 }
 
-interface WidgetLaneProps extends WidgetPanelProps {
-  alignment: WidgetAlignment
+export interface WidgetPanelProps extends WidgetLaneCommonProps {
+  side: WidgetSide
+}
+
+interface WidgetLaneProps extends WidgetLaneCommonProps {
+  className?: string
   isDropTarget: boolean
-  onDropTargetChange: (alignment?: WidgetAlignment) => void
+  lane: WidgetLaneId
+  onDropTargetChange: (lane?: WidgetLaneId) => void
+  showAddButton?: boolean
 }
 
 interface WidgetCardProps {
@@ -336,21 +341,12 @@ const WidgetCard: FC<WidgetCardProps> = memo(
 
         onDropWidget(
           draggedWidgetId,
-          {
-            side: widget.side,
-            alignment: widget.alignment,
-          },
+          { lane: widget.lane },
           widget.id,
           insertPositionForDrop(event),
         )
       },
-      [
-        onDropWidget,
-        onInsertionTargetChange,
-        widget.alignment,
-        widget.id,
-        widget.side,
-      ],
+      [onDropWidget, onInsertionTargetChange, widget.id, widget.lane],
     )
 
     const minimizeControl = widget.isMinimized ? "[=]" : "[_]"
@@ -407,11 +403,12 @@ const WidgetCard: FC<WidgetCardProps> = memo(
 )
 WidgetCard.displayName = "WidgetCard"
 
-const WidgetLane: FC<WidgetLaneProps> = memo(
+export const WidgetLane: FC<WidgetLaneProps> = memo(
   ({
-    alignment,
+    className,
     draggingWidgetId,
     isDropTarget,
+    lane,
     onAddClick,
     onDragEnd,
     onDragStart,
@@ -420,12 +417,12 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
     onRemoveWidget,
     onSendCommand,
     onToggleWidgetMinimized,
-    side,
+    showAddButton = true,
     widgets,
   }) => {
     const laneWidgets = useMemo(
-      () => widgetsForLane(widgets, side, alignment),
-      [alignment, side, widgets],
+      () => widgetsForLane(widgets, lane),
+      [lane, widgets],
     )
     const [insertionTarget, setInsertionTarget] =
       useState<WidgetInsertionTarget>()
@@ -459,7 +456,7 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
     const handleDragOver = useCallback(
       (event: TargetedDragEvent<HTMLDivElement>) => {
         event.preventDefault()
-        onDropTargetChange(alignment)
+        onDropTargetChange(lane)
         const eventTarget = event.target
         if (eventTarget instanceof Element) {
           const hoveredWidget = eventTarget.closest<HTMLElement>(
@@ -484,8 +481,8 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
         }
       },
       [
-        alignment,
         draggingWidgetId,
+        lane,
         laneWidgets,
         onDropTargetChange,
         updateInsertionTarget,
@@ -531,19 +528,18 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
 
         onDropWidget(
           draggedWidgetId,
-          { side, alignment },
+          { lane },
           target.targetWidgetId,
           target.position,
         )
       },
       [
-        alignment,
         draggingWidgetId,
         insertionTarget,
+        lane,
         laneWidgets,
         onDropTargetChange,
         onDropWidget,
-        side,
         updateInsertionTarget,
       ],
     )
@@ -551,13 +547,13 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
     const handleAddDragOver = useCallback(
       (event: TargetedDragEvent<HTMLButtonElement>) => {
         event.preventDefault()
-        onDropTargetChange(alignment)
+        onDropTargetChange(lane)
         updateInsertionTarget(undefined)
         if (event.dataTransfer !== null) {
           event.dataTransfer.dropEffect = "move"
         }
       },
-      [alignment, onDropTargetChange, updateInsertionTarget],
+      [lane, onDropTargetChange, updateInsertionTarget],
     )
 
     const handleAddDrop = useCallback(
@@ -572,15 +568,9 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
           return
         }
 
-        onDropWidget(draggedWidgetId, { side, alignment })
+        onDropWidget(draggedWidgetId, { lane })
       },
-      [
-        alignment,
-        onDropTargetChange,
-        onDropWidget,
-        side,
-        updateInsertionTarget,
-      ],
+      [lane, onDropTargetChange, onDropWidget, updateInsertionTarget],
     )
 
     const handleInsertionMarkerDragOver = useCallback(
@@ -590,14 +580,14 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
       ) => {
         event.preventDefault()
         event.stopPropagation()
-        onDropTargetChange(alignment)
+        onDropTargetChange(lane)
         updateInsertionTarget(target)
 
         if (event.dataTransfer !== null) {
           event.dataTransfer.dropEffect = "move"
         }
       },
-      [alignment, onDropTargetChange, updateInsertionTarget],
+      [lane, onDropTargetChange, updateInsertionTarget],
     )
 
     const handleInsertionMarkerDrop = useCallback(
@@ -617,18 +607,12 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
 
         onDropWidget(
           draggedWidgetId,
-          { side, alignment },
+          { lane },
           target.targetWidgetId,
           target.position,
         )
       },
-      [
-        alignment,
-        onDropTargetChange,
-        onDropWidget,
-        side,
-        updateInsertionTarget,
-      ],
+      [lane, onDropTargetChange, onDropWidget, updateInsertionTarget],
     )
 
     const renderInsertionMarker = (target: WidgetInsertionTarget) => (
@@ -646,9 +630,7 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
 
     return (
       <div
-        className={cn(styles.lane, {
-          [styles.topLane]: alignment === "top",
-          [styles.bottomLane]: alignment === "bottom",
+        className={cn(styles.lane, className, {
           [styles.dragActive]: draggingWidgetId !== undefined,
           [styles.dropTarget]:
             draggingWidgetId !== undefined && isDropTarget,
@@ -688,14 +670,14 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
         insertionTarget.targetWidgetId === undefined
           ? renderInsertionMarker(insertionTarget)
           : null}
-        {draggingWidgetId === undefined ? (
+        {showAddButton && draggingWidgetId === undefined ? (
           <button
             aria-label="Добавить виджет"
             className={styles.addButton}
             title="Добавить виджет"
             type="button"
             onClick={() => {
-              onAddClick({ side, alignment })
+              onAddClick({ lane })
             }}
             onDragOver={handleAddDragOver}
             onDrop={handleAddDrop}
@@ -711,12 +693,15 @@ WidgetLane.displayName = "WidgetLane"
 
 export const WidgetPanel: FC<WidgetPanelProps> = memo(
   ({ side, ...props }) => {
-    const [dropTargetAlignment, setDropTargetAlignment] =
-      useState<WidgetAlignment>()
+    const [dropTargetLane, setDropTargetLane] = useState<WidgetLaneId>()
+    const topLane: WidgetLaneId =
+      side === "left" ? "panel-left-top" : "panel-right-top"
+    const bottomLane: WidgetLaneId =
+      side === "left" ? "panel-left-bottom" : "panel-right-bottom"
 
     useEffect(() => {
       if (props.draggingWidgetId === undefined) {
-        setDropTargetAlignment(undefined)
+        setDropTargetLane(undefined)
       }
     }, [props.draggingWidgetId])
 
@@ -729,17 +714,17 @@ export const WidgetPanel: FC<WidgetPanelProps> = memo(
       >
         <WidgetLane
           {...props}
-          alignment="top"
-          isDropTarget={dropTargetAlignment === "top"}
-          onDropTargetChange={setDropTargetAlignment}
-          side={side}
+          className={styles.topLane}
+          isDropTarget={dropTargetLane === topLane}
+          lane={topLane}
+          onDropTargetChange={setDropTargetLane}
         />
         <WidgetLane
           {...props}
-          alignment="bottom"
-          isDropTarget={dropTargetAlignment === "bottom"}
-          onDropTargetChange={setDropTargetAlignment}
-          side={side}
+          className={styles.bottomLane}
+          isDropTarget={dropTargetLane === bottomLane}
+          lane={bottomLane}
+          onDropTargetChange={setDropTargetLane}
         />
       </aside>
     )

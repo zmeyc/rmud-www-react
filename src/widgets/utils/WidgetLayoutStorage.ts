@@ -1,26 +1,28 @@
 import { isWidgetType } from "./WidgetRegistry"
 import {
-  WidgetAlignment,
   WidgetInstance,
-  WidgetSide,
+  WidgetLaneId,
   WidgetType,
 } from "../types/WidgetTypes"
 
-const storageKey = "rmud.widgetLayout.v1"
+const storageKey = "rmud.widgetLayout.v2"
 
-export const widgetSides: WidgetSide[] = ["left", "right"]
-export const widgetAlignments: WidgetAlignment[] = ["top", "bottom"]
+export const widgetLanes: WidgetLaneId[] = [
+  "panel-left-top",
+  "panel-left-bottom",
+  "panel-right-top",
+  "panel-right-bottom",
+  "game-top-left",
+  "game-top-right",
+  "game-bottom-right",
+]
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null
 }
 
-function isWidgetSide(value: unknown): value is WidgetSide {
-  return value === "left" || value === "right"
-}
-
-function isWidgetAlignment(value: unknown): value is WidgetAlignment {
-  return value === "top" || value === "bottom"
+function isWidgetLane(value: unknown): value is WidgetLaneId {
+  return widgetLanes.some((lane) => lane === value)
 }
 
 export function createWidgetId(type: WidgetType) {
@@ -34,8 +36,7 @@ function createDefaultWidgetLayout(): WidgetInstance[] {
     {
       id: createWidgetId("movement"),
       type: "movement",
-      side: "right",
-      alignment: "bottom",
+      lane: "panel-right-bottom",
       order: 0,
       isMinimized: false,
     },
@@ -44,22 +45,19 @@ function createDefaultWidgetLayout(): WidgetInstance[] {
 
 export function widgetsForLane(
   widgets: WidgetInstance[],
-  side: WidgetSide,
-  alignment: WidgetAlignment,
+  lane: WidgetLaneId,
 ) {
   return widgets
-    .filter((widget) => widget.side === side && widget.alignment === alignment)
+    .filter((widget) => widget.lane === lane)
     .sort((first, second) => first.order - second.order)
 }
 
 export function normalizeWidgetOrders(widgets: WidgetInstance[]) {
   const normalized: WidgetInstance[] = []
-  for (const side of widgetSides) {
-    for (const alignment of widgetAlignments) {
-      widgetsForLane(widgets, side, alignment).forEach((widget, order) => {
-        normalized.push({ ...widget, order })
-      })
-    }
+  for (const lane of widgetLanes) {
+    widgetsForLane(widgets, lane).forEach((widget, order) => {
+      normalized.push({ ...widget, order })
+    })
   }
   return normalized
 }
@@ -72,16 +70,15 @@ function parseStoredWidget(
     return undefined
   }
 
-  const { id, type, side, alignment, order, isMinimized } = value
-  if (!isWidgetType(type) || !isWidgetSide(side) || !isWidgetAlignment(alignment)) {
+  const { id, type, lane, order, isMinimized } = value
+  if (!isWidgetType(type) || !isWidgetLane(lane)) {
     return undefined
   }
 
   return {
     id: typeof id === "string" && id.length > 0 ? id : createWidgetId(type),
     type,
-    side,
-    alignment,
+    lane,
     order: typeof order === "number" ? order : fallbackOrder,
     isMinimized: isMinimized === true,
   }

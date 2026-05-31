@@ -16,14 +16,13 @@ export function appendWidget(
   type: WidgetType,
   target: WidgetAddTarget,
 ) {
-  const lane = widgetsForLane(widgets, target.side, target.alignment)
+  const lane = widgetsForLane(widgets, target.lane)
   return normalizeWidgetOrders([
     ...widgets,
     {
       id: createWidgetId(type),
       type,
-      side: target.side,
-      alignment: target.alignment,
+      lane: target.lane,
       order: lane.length,
       isMinimized: false,
     },
@@ -43,7 +42,7 @@ export function moveWidget(
   }
 
   const rest = widgets.filter((widget) => widget.id !== widgetId)
-  const lane = widgetsForLane(rest, target.side, target.alignment)
+  const lane = widgetsForLane(rest, target.lane)
   const targetIndex = lane.findIndex((widget) => widget.id === targetWidgetId)
   const insertAt =
     targetIndex === -1
@@ -53,16 +52,12 @@ export function moveWidget(
     ...lane.slice(0, insertAt),
     {
       ...movedWidget,
-      side: target.side,
-      alignment: target.alignment,
+      lane: target.lane,
       order: insertAt,
     },
     ...lane.slice(insertAt),
   ]
-  const otherWidgets = rest.filter(
-    (widget) =>
-      widget.side !== target.side || widget.alignment !== target.alignment,
-  )
+  const otherWidgets = rest.filter((widget) => widget.lane !== target.lane)
 
   return normalizeWidgetOrders([...otherWidgets, ...nextLane])
 }
