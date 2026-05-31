@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "preact/compat"
 const storageKey = "rmud.mirror.lineCount.v1"
 
 export const minimumMirrorLineCount = 2
-export const maximumMirrorLineCount = 12
+export const maximumMirrorLineCount = 18
 const defaultMirrorLineCount = 6
 
 export function normalizeMirrorLineCount(value: number) {
