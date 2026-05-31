@@ -45,7 +45,6 @@ interface WidgetLaneProps extends WidgetPanelProps {
 }
 
 interface WidgetCardProps {
-  side: WidgetSide
   widget: WidgetInstance
   draggingWidgetId?: string
   onDragEnd: () => void
@@ -76,20 +75,22 @@ function readDraggedWidgetId<T extends HTMLElement>(event: TargetedDragEvent<T>)
   )
 }
 
-function isMobileWidgetLayout() {
-  return window.matchMedia("(max-width: 860px)").matches
-}
+function insertPositionForDrop(event: TargetedDragEvent<HTMLElement>) {
+  const lane = event.currentTarget.parentElement
+  const flexDirection =
+    lane === null ? "row" : window.getComputedStyle(lane).flexDirection
+  const isColumnDirection = flexDirection.startsWith("column")
+  const isReverseDirection = flexDirection.endsWith("reverse")
+  const { height, left, top, width } =
+    event.currentTarget.getBoundingClientRect()
+  const isBeforeInScreenOrder = isColumnDirection
+    ? event.clientY < top + height / 2
+    : event.clientX < left + width / 2
+  const isBeforeInSourceOrder = isReverseDirection
+    ? !isBeforeInScreenOrder
+    : isBeforeInScreenOrder
 
-function insertPositionForDrop(
-  event: TargetedDragEvent<HTMLElement>,
-  side: WidgetSide,
-): InsertPosition {
-  const { left, width } = event.currentTarget.getBoundingClientRect()
-  const isBeforeInScreenOrder = event.clientX < left + width / 2
-  if (isMobileWidgetLayout() || side === "right") {
-    return isBeforeInScreenOrder ? "before" : "after"
-  }
-  return isBeforeInScreenOrder ? "after" : "before"
+  return isBeforeInSourceOrder ? "before" : "after"
 }
 
 function renderWidgetContent(
@@ -113,7 +114,6 @@ const WidgetCard: FC<WidgetCardProps> = memo(
     onRemoveWidget,
     onSendCommand,
     onToggleWidgetMinimized,
-    side,
     widget,
   }) => {
     const handleDragStart = useCallback(
@@ -158,10 +158,10 @@ const WidgetCard: FC<WidgetCardProps> = memo(
             alignment: widget.alignment,
           },
           widget.id,
-          insertPositionForDrop(event, side),
+          insertPositionForDrop(event),
         )
       },
-      [onDropWidget, side, widget.alignment, widget.id, widget.side],
+      [onDropWidget, widget.alignment, widget.id, widget.side],
     )
 
     const minimizeControl = widget.isMinimized ? "[=]" : "[_]"
@@ -318,7 +318,6 @@ const WidgetLane: FC<WidgetLaneProps> = memo(
           <WidgetCard
             draggingWidgetId={draggingWidgetId}
             key={widget.id}
-            side={side}
             widget={widget}
             onDragEnd={onDragEnd}
             onDragStart={onDragStart}

@@ -45,14 +45,17 @@
   box-shadow: inset 0 0 0 1px var(--color-low-cyan);
 }
 
+.leftPanel .lane,
 .rightPanel .lane {
-  flex-direction: row;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
   justify-content: flex-start;
 }
 
-.leftPanel .lane {
-  flex-direction: row-reverse;
-  justify-content: flex-start;
+.leftPanel .bottomLane,
+.rightPanel .bottomLane {
+  flex-direction: column-reverse;
 }
 
 .widget {
@@ -97,6 +100,12 @@
   padding: 1ch;
 }
 
+.leftPanel .widgetBody {
+  display: grid;
+  justify-items: end;
+  text-align: right;
+}
+
 .widgetTitleButton,
 .addButton {
   padding: 0;
@@ -127,6 +136,14 @@
   align-self: flex-start;
 }
 
+.leftPanel .addButton {
+  align-self: flex-end;
+}
+
+.rightPanel .addButton {
+  align-self: flex-start;
+}
+
 @media (max-width: 860px) {
   .root {
     display: flex;
@@ -150,6 +167,8 @@
   .leftPanel .lane,
   .rightPanel .lane {
     flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
 
   .topLane {
@@ -178,5 +197,15 @@
 
   .bottomLane .addButton {
     align-self: flex-start;
+  }
+
+  .leftPanel .addButton,
+  .rightPanel .addButton {
+    align-self: flex-start;
+  }
+
+  .leftPanel .widgetBody {
+    justify-items: start;
+    text-align: left;
   }
 }

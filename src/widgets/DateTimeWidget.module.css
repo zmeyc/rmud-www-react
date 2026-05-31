@@ -1,19 +1,19 @@
 .root {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: inline-flex;
   gap: 2ch;
   align-items: center;
-  width: 21ch;
   max-width: 100%;
 }
 
 .dateBlock {
   display: grid;
+  flex: 0 1 auto;
   gap: 1ch;
   min-width: 0;
 }
 
 .time {
+  flex: 0 0 auto;
   color: var(--color-light-gray);
   line-height: inherit;
   white-space: nowrap;
