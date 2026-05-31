@@ -1,11 +1,13 @@
-import { isWidgetType } from "./WidgetRegistry"
 import {
+  DefaultWidgetDefinition,
+  StoredWidgetInstance,
+  WidgetDefinition,
   WidgetInstance,
   WidgetLaneId,
-  WidgetType,
+  WidgetLayoutState,
 } from "../types/WidgetTypes"
 
-const storageKey = "rmud.widgetLayout.v2"
+const storageKey = "rmud.widgetLayout.v6"
 
 export const widgetLanes: WidgetLaneId[] = [
   "panel-left-top",
@@ -17,7 +19,7 @@ export const widgetLanes: WidgetLaneId[] = [
   "game-bottom-right",
 ]
 
-function isRecord(value: unknown): value is Record<string, unknown> {
+export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null
 }
 
@@ -25,26 +27,46 @@ function isWidgetLane(value: unknown): value is WidgetLaneId {
   return widgetLanes.some((lane) => lane === value)
 }
 
-export function createWidgetId(type: WidgetType) {
-  return `${type}-${Date.now().toString(36)}-${Math.random()
+export function createWidgetId(prefix: string) {
+  return `${prefix}-${Date.now().toString(36)}-${Math.random()
     .toString(36)
     .slice(2, 9)}`
 }
 
-function createDefaultWidgetLayout(): WidgetInstance[] {
-  return [
-    {
-      id: createWidgetId("movement"),
-      type: "movement",
-      lane: "panel-right-bottom",
-      order: 0,
-      isMinimized: false,
-    },
-  ]
+export function parseStoredWidgetLayout(
+  value: Record<string, unknown>,
+  fallbackOrder: number,
+): WidgetLayoutState | undefined {
+  const { id, lane, order, isMinimized } = value
+  if (!isWidgetLane(lane)) {
+    return undefined
+  }
+
+  return {
+    id: typeof id === "string" && id.length > 0 ? id : createWidgetId("widget"),
+    lane,
+    order: typeof order === "number" ? order : fallbackOrder,
+    isMinimized: isMinimized === true,
+  }
+}
+
+function createDefaultWidgetLayout(
+  defaultWidgets: readonly DefaultWidgetDefinition[],
+) {
+  return normalizeWidgetOrders(
+    defaultWidgets.map(({ lane, widget }, order) =>
+      widget.create({
+        id: createWidgetId(widget.id),
+        lane,
+        order,
+        isMinimized: false,
+      }),
+    ),
+  )
 }
 
 export function widgetsForLane(
-  widgets: WidgetInstance[],
+  widgets: readonly WidgetInstance[],
   lane: WidgetLaneId,
 ) {
   return widgets
@@ -52,11 +74,11 @@ export function widgetsForLane(
     .sort((first, second) => first.order - second.order)
 }
 
-export function normalizeWidgetOrders(widgets: WidgetInstance[]) {
+export function normalizeWidgetOrders(widgets: readonly WidgetInstance[]) {
   const normalized: WidgetInstance[] = []
   for (const lane of widgetLanes) {
     widgetsForLane(widgets, lane).forEach((widget, order) => {
-      normalized.push({ ...widget, order })
+      normalized.push(widget.withLayout({ order }))
     })
   }
   return normalized
@@ -65,53 +87,54 @@ export function normalizeWidgetOrders(widgets: WidgetInstance[]) {
 function parseStoredWidget(
   value: unknown,
   fallbackOrder: number,
-): WidgetInstance | undefined {
-  if (!isRecord(value)) {
-    return undefined
+  availableWidgets: readonly WidgetDefinition[],
+) {
+  for (const widget of availableWidgets) {
+    const parsedWidget = widget.parse(value, fallbackOrder)
+    if (parsedWidget !== undefined) {
+      return parsedWidget
+    }
   }
 
-  const { id, type, lane, order, isMinimized } = value
-  if (!isWidgetType(type) || !isWidgetLane(lane)) {
-    return undefined
-  }
-
-  return {
-    id: typeof id === "string" && id.length > 0 ? id : createWidgetId(type),
-    type,
-    lane,
-    order: typeof order === "number" ? order : fallbackOrder,
-    isMinimized: isMinimized === true,
-  }
+  return undefined
 }
 
-export function loadWidgetLayout() {
+export interface LoadWidgetLayoutOptions {
+  availableWidgets: readonly WidgetDefinition[]
+  defaultWidgets: readonly DefaultWidgetDefinition[]
+}
+
+export function loadWidgetLayout({
+  availableWidgets,
+  defaultWidgets,
+}: LoadWidgetLayoutOptions) {
   try {
     const storedValue = localStorage.getItem(storageKey)
     if (storedValue === null) {
-      return createDefaultWidgetLayout()
+      return createDefaultWidgetLayout(defaultWidgets)
     }
 
     const parsedValue = JSON.parse(storedValue) as unknown
     if (!Array.isArray(parsedValue)) {
-      return createDefaultWidgetLayout()
+      return createDefaultWidgetLayout(defaultWidgets)
     }
 
     const widgets = parsedValue.flatMap((value, index) => {
-      const widget = parseStoredWidget(value, index)
+      const widget = parseStoredWidget(value, index, availableWidgets)
       return widget === undefined ? [] : [widget]
     })
     return normalizeWidgetOrders(widgets)
   } catch (_error) {
-    return createDefaultWidgetLayout()
+    return createDefaultWidgetLayout(defaultWidgets)
   }
 }
 
-export function saveWidgetLayout(widgets: WidgetInstance[]) {
+export function saveWidgetLayout(widgets: readonly WidgetInstance[]) {
   try {
-    localStorage.setItem(
-      storageKey,
-      JSON.stringify(normalizeWidgetOrders(widgets)),
-    )
+    const storedWidgets: StoredWidgetInstance[] = normalizeWidgetOrders(
+      widgets,
+    ).map((widget) => widget.serialize())
+    localStorage.setItem(storageKey, JSON.stringify(storedWidgets))
   } catch (_error) {
     return
   }

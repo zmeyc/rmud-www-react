@@ -21,22 +21,38 @@ import {
 } from "../utils/WidgetLayoutStorage"
 import { WidgetLane, WidgetPanel } from "./WidgetPanel"
 import {
+  DefaultWidgetDefinition,
   WidgetAddTarget,
+  WidgetDefinition,
+  WidgetInstance,
   WidgetLaneId,
-  WidgetType,
 } from "../types/WidgetTypes"
 import { useIsElementNarrowerThanCharacters } from "../../hooks/useIsElementNarrowerThanCharacters"
 import styles from "./WidgetLayout.module.css"
 
 export interface WidgetLayoutProps extends ComponentProps<"div"> {
+  availableWidgets: readonly WidgetDefinition[]
   className?: string
+  defaultWidgets: readonly DefaultWidgetDefinition[]
   onSendCommand: (command: string) => void
 }
 
 export const WidgetLayout: FC<WidgetLayoutProps> = memo(
-  ({ className, children, onSendCommand, ...props }) => {
+  ({
+    availableWidgets,
+    className,
+    children,
+    defaultWidgets,
+    onSendCommand,
+    ...props
+  }) => {
     const contentAreaRef = useRef<HTMLElement>(null)
-    const [widgets, setWidgets] = useState(loadWidgetLayout)
+    const [widgets, setWidgets] = useState(() =>
+      loadWidgetLayout({
+        availableWidgets,
+        defaultWidgets,
+      }),
+    )
     const [addTarget, setAddTarget] = useState<WidgetAddTarget>()
     const [draggingWidgetId, setDraggingWidgetId] = useState<string>()
     const [innerDropTargetLane, setInnerDropTargetLane] =
@@ -57,13 +73,13 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
     }, [draggingWidgetId])
 
     const handleAddWidget = useCallback(
-      (type: WidgetType) => {
+      (widget: WidgetDefinition) => {
         if (addTarget === undefined) {
           return
         }
 
         setWidgets((currentWidgets) =>
-          appendWidget(currentWidgets, type, addTarget),
+          appendWidget(currentWidgets, widget, addTarget),
         )
         setAddTarget(undefined)
       },
@@ -92,11 +108,22 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
       )
     }, [])
 
+    const handleChangeWidget = useCallback(
+      (changedWidget: WidgetInstance) => {
+        setWidgets((currentWidgets) =>
+          currentWidgets.map((widget) =>
+            widget.id === changedWidget.id ? changedWidget : widget,
+          ),
+        )
+      },
+      [],
+    )
+
     const handleToggleWidgetMinimized = useCallback((widgetId: string) => {
       setWidgets((currentWidgets) =>
         currentWidgets.map((widget) =>
           widget.id === widgetId
-            ? { ...widget, isMinimized: !widget.isMinimized }
+            ? widget.withMinimized(!widget.isMinimized)
             : widget,
         ),
       )
@@ -117,6 +144,7 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
       onDragEnd: handleDragEnd,
       onDragStart: setDraggingWidgetId,
       onDropWidget: handleDropWidget,
+      onChangeWidget: handleChangeWidget,
       onRemoveWidget: handleRemoveWidget,
       onSendCommand,
       onToggleWidgetMinimized: handleToggleWidgetMinimized,
@@ -167,6 +195,7 @@ export const WidgetLayout: FC<WidgetLayoutProps> = memo(
         {addTarget === undefined ? null : (
           <AddWidgetDialog
             addTarget={addTarget}
+            widgets={availableWidgets}
             onAddWidget={handleAddWidget}
             onClose={handleCloseAddDialog}
           />

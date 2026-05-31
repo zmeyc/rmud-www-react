@@ -9,9 +9,7 @@ import {
   useState,
 } from "preact/compat"
 import cn from "classnames"
-import { DateTimeWidget } from "../DateTimeWidget"
-import { MovementWidget } from "../MovementWidget"
-import { titleForWidgetType } from "../utils/WidgetRegistry"
+import { WidgetSettingsDialog } from "./WidgetSettingsDialog"
 import { widgetsForLane } from "../utils/WidgetLayoutStorage"
 import { InsertPosition } from "../utils/WidgetLayoutActions"
 import {
@@ -34,6 +32,7 @@ interface WidgetLaneCommonProps {
     targetWidgetId?: string,
     position?: InsertPosition,
   ) => void
+  onChangeWidget: (widget: WidgetInstance) => void
   onRemoveWidget: (widgetId: string) => void
   onSendCommand: (command: string) => void
   onToggleWidgetMinimized: (widgetId: string) => void
@@ -63,6 +62,7 @@ interface WidgetCardProps {
     targetWidgetId?: string,
     position?: InsertPosition,
   ) => void
+  onChangeWidget: (widget: WidgetInstance) => void
   onRemoveWidget: (widgetId: string) => void
   onSendCommand: (command: string) => void
   onToggleWidgetMinimized: (widgetId: string) => void
@@ -146,11 +146,6 @@ function normalizeInsertionTarget(
 }
 
 const dragDataType = "application/x-rmud-widget-id"
-
-const compactWidgetTypes: Record<WidgetInstance["type"], boolean> = {
-  datetime: true,
-  movement: true,
-}
 
 type TargetedDragEvent<T extends HTMLElement> = TargetedEvent<T, DragEvent>
 
@@ -268,18 +263,6 @@ function insertionTargetForLaneDrop(
   }
 }
 
-function renderWidgetContent(
-  widget: WidgetInstance,
-  onSendCommand: (command: string) => void,
-) {
-  switch (widget.type) {
-    case "datetime":
-      return <DateTimeWidget />
-    case "movement":
-      return <MovementWidget onSendCommand={onSendCommand} />
-  }
-}
-
 const WidgetCard: FC<WidgetCardProps> = memo(
   ({
     draggingWidgetId,
@@ -287,11 +270,14 @@ const WidgetCard: FC<WidgetCardProps> = memo(
     onDragStart,
     onInsertionTargetChange,
     onDropWidget,
+    onChangeWidget,
     onRemoveWidget,
     onSendCommand,
     onToggleWidgetMinimized,
     widget,
   }) => {
+    const [settingsAnchorRect, setSettingsAnchorRect] = useState<DOMRect>()
+
     const handleDragStart = useCallback(
       (event: TargetedDragEvent<HTMLElement>) => {
         const { dataTransfer } = event
@@ -351,12 +337,31 @@ const WidgetCard: FC<WidgetCardProps> = memo(
 
     const minimizeControl = widget.isMinimized ? "[=]" : "[_]"
     const minimizeTitle = widget.isMinimized ? "Развернуть" : "Свернуть"
-    const title = titleForWidgetType(widget.type)
+    const title = widget.title()
+
+    const handleOpenSettings = useCallback(
+      (event: TargetedEvent<HTMLButtonElement, MouseEvent>) => {
+        event.stopPropagation()
+        setSettingsAnchorRect(event.currentTarget.getBoundingClientRect())
+      },
+      [],
+    )
+
+    const handleCloseSettings = useCallback(() => {
+      setSettingsAnchorRect(undefined)
+    }, [])
+
+    const handleChangeWidget = useCallback(
+      (nextWidget: WidgetInstance) => {
+        onChangeWidget(nextWidget)
+      },
+      [onChangeWidget],
+    )
 
     return (
       <article
         className={cn(styles.widget, {
-          [styles.compactWidget]: compactWidgetTypes[widget.type],
+          [styles.compactWidget]: widget.isCompact(),
           [styles.dragging]: draggingWidgetId === widget.id,
         })}
         data-widget-id={widget.id}
@@ -367,7 +372,15 @@ const WidgetCard: FC<WidgetCardProps> = memo(
         onDrop={handleDrop}
       >
         <header className={styles.widgetTitleBar}>
-          <span className={styles.dragHandle}>:::</span>
+          <button
+            aria-label={`Настроить виджет ${title}`}
+            className={styles.widgetTitleButton}
+            title="Настройки"
+            type="button"
+            onClick={handleOpenSettings}
+          >
+            [*]
+          </button>
           <span className={styles.widgetTitle}>{title}</span>
           <button
             aria-label={`${minimizeTitle} виджет`}
@@ -397,8 +410,23 @@ const WidgetCard: FC<WidgetCardProps> = memo(
             [styles.minimizedWidgetBody]: widget.isMinimized,
           })}
         >
-          {renderWidgetContent(widget, onSendCommand)}
+          {widget.renderContent({
+            onChangeWidget: handleChangeWidget,
+            onSendCommand,
+          })}
         </div>
+        {settingsAnchorRect === undefined ? null : (
+          <WidgetSettingsDialog
+            anchorRect={settingsAnchorRect}
+            heading={title}
+            onClose={handleCloseSettings}
+          >
+            {widget.renderSettings({
+              onChangeWidget: handleChangeWidget,
+              onSendCommand,
+            })}
+          </WidgetSettingsDialog>
+        )}
       </article>
     )
   },
@@ -416,6 +444,7 @@ export const WidgetLane: FC<WidgetLaneProps> = memo(
     onDragStart,
     onDropTargetChange,
     onDropWidget,
+    onChangeWidget,
     onRemoveWidget,
     onSendCommand,
     onToggleWidgetMinimized,
@@ -657,6 +686,7 @@ export const WidgetLane: FC<WidgetLaneProps> = memo(
                 onDragEnd={onDragEnd}
                 onDragStart={onDragStart}
                 onDropWidget={onDropWidget}
+                onChangeWidget={onChangeWidget}
                 onInsertionTargetChange={updateInsertionTarget}
                 onRemoveWidget={onRemoveWidget}
                 onSendCommand={onSendCommand}

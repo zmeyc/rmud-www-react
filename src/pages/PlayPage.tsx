@@ -22,6 +22,9 @@ import { isInitialized, setInitialized, setStyleVarValue } from "../utils/html"
 import { replaceNewLinesWithSpaces } from "../utils/string"
 import { gameUrl, isDebug } from "../settings"
 import { WidgetLayout } from "../widgets/components/WidgetLayout"
+import { dateTimeWidgetDefinition } from "../widgets/DateTimeWidgetDefinition"
+import { movementWidgetDefinition } from "../widgets/MovementWidgetDefinition"
+import type { DefaultWidgetDefinition } from "../widgets/types/WidgetTypes"
 import { MirrorWidget, type MirrorWidgetItem } from "../widgets/MirrorWidget"
 import { usePlayMirrorEnabled } from "./hooks/usePlayMirrorEnabled"
 import { PlaySettingsDialog } from "./PlaySettingsDialog"
@@ -43,6 +46,16 @@ type GameTextMirrorItemContent =
     }
 
 const maximumGameTextMirrorItems = 120
+const availableWidgets = [
+  dateTimeWidgetDefinition,
+  movementWidgetDefinition,
+]
+const defaultWidgets: readonly DefaultWidgetDefinition[] = [
+  {
+    lane: "game-bottom-right",
+    widget: movementWidgetDefinition,
+  },
+]
 
 export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
   const pageRef = useRef<HTMLDivElement>(null)
@@ -308,7 +321,9 @@ export const PlayPage: FC<PlayPageProps> = memo(({ className, ...props }) => {
     >
       {debugInfo}
       <WidgetLayout
+        availableWidgets={availableWidgets}
         className={styles.playSurface}
+        defaultWidgets={defaultWidgets}
         onSendCommand={handleSendWidgetCommand}
       >
         <div className={styles.mainArea}>

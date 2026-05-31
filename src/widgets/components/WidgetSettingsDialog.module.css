@@ -1,0 +1,95 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
+
+.dialog {
+  position: fixed;
+  width: min(44ch, calc(100vw - 2ch));
+  color: var(--color-light-gray);
+  background-color: var(--color-low-blue);
+  box-shadow:
+    inset 0 0 0 2px var(--color-light-gray),
+    1ch 1ch 0 var(--color-black);
+}
+
+.titleBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2ch;
+  padding: 0 1ch;
+  color: var(--color-white);
+  background-color: var(--color-low-cyan);
+}
+
+.body {
+  display: grid;
+  gap: 2ch;
+  padding: 2ch;
+}
+
+.checkboxList {
+  display: grid;
+  gap: 1ch;
+}
+
+.checkboxRow {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3ch minmax(0, 1fr);
+  align-items: start;
+  gap: 1ch;
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+.checkbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  opacity: 0;
+}
+
+.checkboxMark {
+  color: var(--color-dark-gray);
+  white-space: nowrap;
+}
+
+.checkbox:checked + .checkboxMark {
+  color: var(--color-yellow);
+}
+
+.checkboxText {
+  min-width: 0;
+}
+
+.emptyState {
+  color: var(--color-dark-gray);
+}
+
+.titleButton {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  background-color: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: none;
+}
+
+.titleButton:hover,
+.titleButton:focus,
+.checkboxRow:focus-within {
+  color: var(--color-yellow);
+  outline: none;
+}
+
+.checkboxRow:hover .checkboxMark,
+.checkbox:focus + .checkboxMark {
+  color: var(--color-high-cyan);
+}

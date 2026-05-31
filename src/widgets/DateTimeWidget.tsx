@@ -1,9 +1,11 @@
 import { ComponentProps, FC, memo, useEffect, useState } from "preact/compat"
 import cn from "classnames"
+import { DateTimeWidgetSettings } from "./types/WidgetTypes"
 import styles from "./DateTimeWidget.module.css"
 
 export interface DateTimeWidgetProps extends ComponentProps<"div"> {
   className?: string
+  settings: DateTimeWidgetSettings
 }
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -40,13 +42,27 @@ function localDateTimeValue(date: Date) {
 }
 
 export const DateTimeWidget: FC<DateTimeWidgetProps> = memo(
-  ({ className, ...props }) => {
+  ({ className, settings, ...props }) => {
     const [currentDate, setCurrentDate] = useState(() => new Date())
     const dateText = dateFormatter.format(currentDate)
     const fullDateText = fullDateFormatter.format(currentDate)
     const timeText = timeFormatter.format(currentDate)
     const weekdayText = weekdayFormatter.format(currentDate)
     const dateTimeValue = localDateTimeValue(currentDate)
+    const showDateBlock = settings.showDate || settings.showWeekday
+    const ariaLabel = [
+      settings.showDate && settings.showWeekday
+        ? fullDateText
+        : [
+            settings.showWeekday ? weekdayText : undefined,
+            settings.showDate ? dateText : undefined,
+          ]
+            .filter(Boolean)
+            .join(", "),
+      settings.showTime ? timeText : undefined,
+    ]
+      .filter(Boolean)
+      .join(", ")
 
     useEffect(() => {
       const intervalId = window.setInterval(() => {
@@ -61,24 +77,32 @@ export const DateTimeWidget: FC<DateTimeWidgetProps> = memo(
     return (
       <div
         {...props}
-        aria-label={`${fullDateText}, ${timeText}`}
+        aria-label={ariaLabel}
         className={cn(styles.root, className)}
       >
-        <div className={styles.dateBlock}>
+        {showDateBlock ? (
+          <div className={styles.dateBlock}>
+            {settings.showDate ? (
+              <time
+                className={styles.date}
+                dateTime={dateTimeValue}
+              >
+                {dateText}
+              </time>
+            ) : null}
+            {settings.showWeekday ? (
+              <span className={styles.weekday}>{weekdayText}</span>
+            ) : null}
+          </div>
+        ) : null}
+        {settings.showTime ? (
           <time
-            className={styles.date}
+            className={styles.time}
             dateTime={dateTimeValue}
           >
-            {dateText}
+            {timeText}
           </time>
-          <span className={styles.weekday}>{weekdayText}</span>
-        </div>
-        <time
-          className={styles.time}
-          dateTime={dateTimeValue}
-        >
-          {timeText}
-        </time>
+        ) : null}
       </div>
     )
   },

@@ -5,32 +5,31 @@ import {
 } from "./WidgetLayoutStorage"
 import {
   WidgetAddTarget,
+  WidgetDefinition,
   WidgetInstance,
-  WidgetType,
 } from "../types/WidgetTypes"
 
 export type InsertPosition = "before" | "after"
 
 export function appendWidget(
-  widgets: WidgetInstance[],
-  type: WidgetType,
+  widgets: readonly WidgetInstance[],
+  widgetDefinition: WidgetDefinition,
   target: WidgetAddTarget,
 ) {
   const lane = widgetsForLane(widgets, target.lane)
   return normalizeWidgetOrders([
     ...widgets,
-    {
-      id: createWidgetId(type),
-      type,
+    widgetDefinition.create({
+      id: createWidgetId(widgetDefinition.id),
       lane: target.lane,
       order: lane.length,
       isMinimized: false,
-    },
+    }),
   ])
 }
 
 export function moveWidget(
-  widgets: WidgetInstance[],
+  widgets: readonly WidgetInstance[],
   widgetId: string,
   target: WidgetAddTarget,
   targetWidgetId?: string,
@@ -38,7 +37,7 @@ export function moveWidget(
 ) {
   const movedWidget = widgets.find((widget) => widget.id === widgetId)
   if (movedWidget === undefined) {
-    return widgets
+    return [...widgets]
   }
 
   const rest = widgets.filter((widget) => widget.id !== widgetId)
@@ -50,11 +49,10 @@ export function moveWidget(
       : targetIndex + (position === "after" ? 1 : 0)
   const nextLane = [
     ...lane.slice(0, insertAt),
-    {
-      ...movedWidget,
+    movedWidget.withLayout({
       lane: target.lane,
       order: insertAt,
-    },
+    }),
     ...lane.slice(insertAt),
   ]
   const otherWidgets = rest.filter((widget) => widget.lane !== target.lane)

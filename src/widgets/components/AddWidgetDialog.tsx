@@ -6,14 +6,14 @@ import {
   useCallback,
 } from "preact/compat"
 import cn from "classnames"
-import { widgetDefinitions } from "../utils/WidgetRegistry"
-import { WidgetAddTarget, WidgetType } from "../types/WidgetTypes"
+import { WidgetAddTarget, WidgetDefinition } from "../types/WidgetTypes"
 import styles from "./AddWidgetDialog.module.css"
 
 export interface AddWidgetDialogProps extends ComponentProps<"div"> {
   className?: string
   addTarget: WidgetAddTarget
-  onAddWidget: (type: WidgetType) => void
+  widgets: readonly WidgetDefinition[]
+  onAddWidget: (widget: WidgetDefinition) => void
   onClose: () => void
 }
 
@@ -37,7 +37,7 @@ function labelForTarget(target: WidgetAddTarget) {
 }
 
 export const AddWidgetDialog: FC<AddWidgetDialogProps> = memo(
-  ({ addTarget, className, onAddWidget, onClose, ...props }) => {
+  ({ addTarget, className, widgets, onAddWidget, onClose, ...props }) => {
     const handleOverlayClick = useCallback(
       (event: TargetedEvent<HTMLDivElement, MouseEvent>) => {
         if (event.target === event.currentTarget) {
@@ -75,16 +75,16 @@ export const AddWidgetDialog: FC<AddWidgetDialogProps> = memo(
               {labelForTarget(addTarget)}
             </div>
             <div className={styles.widgetList}>
-              {widgetDefinitions.map((definition) => (
+              {widgets.map((widget) => (
                 <button
                   className={styles.widgetButton}
-                  key={definition.type}
+                  key={widget.id}
                   type="button"
                   onClick={() => {
-                    onAddWidget(definition.type)
+                    onAddWidget(widget)
                   }}
                 >
-                  [+] {definition.title}
+                  [+] {widget.title()}
                 </button>
               ))}
             </div>
